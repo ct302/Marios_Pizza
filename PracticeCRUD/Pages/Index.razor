@@ -1,0 +1,138 @@
+﻿@page "/"
+@using System.Timers;
+@inject NavigationManager navManager
+@inject PizzaOrder grabCurrentUserIDService
+@inject AppDbIdentityContext db
+@using Data
+@page "/home"
+
+
+@*Background Video*@
+<video autoplay muted loop class="videoInsert">
+    <source src="/videos/Pizza%20HD.mp4" type="video/mp4" />
+
+</video>
+
+
+
+
+<div id="menuOptions">
+    <p class="pizzaFont" @onclick="@( () => navManager.NavigateTo("pizzaDisplay"))">Pizza</p>
+    <p class="pizzaFont" @onclick="@( () => navManager.NavigateTo("wingscomponent"))">Wings</p>
+    <p class="pizzaFont" @onclick="@( () => navManager.NavigateTo("/drinks"))">Drinks</p>
+
+</div>
+
+   
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@code {
+
+    public string email;
+
+    public string UserID;
+
+
+    void navigateTo()
+    {
+
+        UserID = "";
+        UserID = db.Users.Where(p => p.NormalizedEmail == email).FirstOrDefault().Id;
+        //navManager.NavigateTo($"/vieworderhistory{UserID}");
+
+
+    }
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

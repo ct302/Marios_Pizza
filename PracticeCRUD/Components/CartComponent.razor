@@ -1,0 +1,274 @@
+﻿@page "/cart"
+@inherits Data.CardInfoCodeBehind
+@inject Services.PizzaService pizzaService
+@inject NavigationManager navManager
+@inject Services.PizzaOrder pizzaOrderService
+@using System.Collections.Generic;
+<img id="pizzaDisplayBGImg" src="/images/Brick.jpg" />
+
+
+<div class="container text-center">
+<h1 style=" position:relative; top: 100px; margin-left:auto; margin-right:auto; color: white; font-size: 5em; font-family: Cooper; display: @(pizzaService.TotalOrderPrice <= 0 ? "" : "none")"> No Items currently in Cart</h1>
+
+</div>
+
+
+
+<section class="py-4" style="position: relative; top: 100px; margin-bottom: 200px; display: @(pizzaService.TotalOrderPrice > 0 ? "" : "none") ">
+    <div class="container-fluid" style="text-align:center;">
+        <div style="background-color: darkseagreen; border: 3px solid white; border-radius: 50px;">
+        <h4 class="mb-4 text-center" style="font-family: Cooper; color: whitesmoke; font-size: 3em;">Current Cart</h4>
+
+        </div>
+
+        <div class="table-responsive" style="background-image: url(/images/CartBG.jpg);" >
+            <table class="table" style="color: white; border-bottom: solid white 2px;">
+                <thead style="color: darkseagreen">
+                    <tr><th scope="col">Item Name</th><th scope="col">Item Size</th><th scope="col">Item Price</th><th scope="col">Edit</th></tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var item in pizzaService.TotalOrderItems)
+                    {
+
+
+
+
+                        <tr>
+
+                            <td style="border-right: solid 2px white; border-bottom: solid 2px white;"> 
+                                <span style="font-family: Cooper;">
+                                    @item.PizzaName @item.WingsName
+                                      @item.DrinkName
+                                </span>
+                            
+                                @foreach (var x in item.ToppingsList)
+                                {
+                                    <span style="color: ghostwhite; font-family: monospace"> w/ @x </span>
+
+                                }
+                                @item.Toppings
+                            </td>
+                          
+                            <td style="border-right: solid 2px white; border-bottom: solid 2px white;" >@item.PizzaSize @item.WingsCount  </td>
+                            
+                            <td style="border-right: solid 2px white; border-bottom: solid 2px white; ">$@item.FinalItemPrice.ToString("#.##")</td>
+
+
+
+                            @foreach (var topping in item.ToppingsList)
+                            {
+                        <td style="display: block; border-right: solid 2px white;">
+                           @topping
+
+                            <button class=" btn btn-danger" @onclick="@( () => removeTopping(topping,item.OrderID))">Remove Topping</button>
+                        </td>
+                            }
+
+
+                        <td style="border-top: 2px solid white; border-right: solid white 2px;">
+                            <button  class="btn btn-danger" @onclick="@( () => removeOrder(item.OrderID))">
+                                Remove @item.PizzaSize  @item.PizzaName @item.WingsName  @item.DrinkName from order
+                            </button>
+
+                        </td>
+                        </tr>
+
+
+
+                    }
+
+
+
+                </tbody>
+            </table>
+    <h1 id="totalText" class="text-center mt-5" style="color: white; font-family: Cooper; border-top: 2px solid white;">Current Total $@pizzaService.TotalOrderPrice.ToString("#.###")</h1>
+    <button class="btn btn-success" style="position: relative; margin-left: auto; margin-right: auto; margin-top: 45px; margin-bottom: 45px;" @onclick="@( () => navManager.NavigateTo("/checkout"))">Go to Checkout</button>
+        </div>
+    </div>
+  
+
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@*Original Cart Component*@
+
+@*<div class="flex-container">
+
+
+
+
+        @if (pizzaService.TotalOrderItems == null)
+        {
+
+        }
+        else
+        {
+            <h1 class="text-center">Current Cart Items</h1>
+
+            //Pizza
+            @foreach (var item in pizzaService.TotalOrderItems)
+            {
+                <h1 class="text-muted">@item.PizzaSize</h1>
+                <h1 class="text-monospace">@item.PizzaName</h1>
+                <h1 class="text-monospace">@item.WingsCount</h1>
+                <h1 class="text-monospace">@item.WingsName</h1>
+
+                if (item.PizzaName != "")
+                {
+                    @foreach (var topping in item.Toppings)
+                    {
+                        <p>w/ @topping</p>
+                    }
+
+                }
+
+
+                <h1 class="text-info">$@item.FinalItemPrice.ToString("#.##")</h1>
+                <button @onclick="@( () => removeOrder(item.OrderID) )"> Remove @item.PizzaName</button>
+            }
+
+
+
+
+        }
+
+
+
+        <button id="removeAllItemsButton" class="btn-success" @onclick="@( () => navManager.NavigateTo("/checkout")  )">Go To Checkout</button>
+        <h1>Current Cart Total:   $@pizzaService.TotalOrderPrice.ToString("#.##")</h1>
+
+        <h1>Current Item Count: @pizzaService.ItemCount</h1>
+
+    </div>*@
+
+
+<style>
+
+
+    #toppingText:before{
+        content:"Topping: ";
+        font-size: 0.8em;
+        color: whitesmoke;
+        margin: 10px;
+        font-family: 'Agency FB';
+
+    }
+
+    td{
+
+        font-family: Candara;
+        font-size: 1.5em;
+
+    }
+
+    th {
+
+        font-family: Cooper;
+        font-size: 2em;
+    }
+
+    #removeAllItemsButton{
+        display: @(pizzaService.CustomerCartOrder.Count == 0 ? "none" : "");
+        transition: all 1s ease-in-out;
+    }
+
+    .flex-container {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        justify-content: center;
+        align-content: stretch;
+        align-items: center;
+        position: relative;
+        top: 100px;
+    }
+
+    #pizzaDisplayBGImg {
+        height: 100%;
+        width: 100%;
+        z-index: -4;
+        background-size: cover;
+        background-repeat: no-repeat;
+        position: fixed;
+        animation: fadeIn 0.2s ease-in-out forwards;
+    }
+</style>
+
+@code {
+
+    double sumOfItems;
+    double priceToDelete;
+
+
+    Random myRandom = new Random();
+
+    void removeTopping(string name, string myOrderID)
+    {
+        @foreach (var item in pizzaService.TotalOrderItems)
+        {
+            if (item.OrderID == myOrderID)
+            {
+                item.ToppingsList.Remove(name);
+                item.FinalItemPrice -= 1.99;
+                pizzaService.TotalOrderPrice -= 1.99;
+                StateHasChanged();
+            }
+
+            
+
+        }
+
+        StateHasChanged();
+    }
+
+    void RemoveAllItems()
+    {
+
+        sumOfItems = pizzaService.CustomerCartOrder.Values.Sum();
+        pizzaService.TotalOrderPrice -= sumOfItems;
+        pizzaService.ItemCount = 0;
+        pizzaService.CustomerCartOrder.Clear();
+    }
+
+    void removeOrder(string orderID)
+    {
+        pizzaService.ItemCount -= 1;
+        priceToDelete = pizzaService.TotalOrderItems.FirstOrDefault(p => p.OrderID == orderID).FinalItemPrice;
+        pizzaService.TotalOrderPrice -= priceToDelete;
+        var result = pizzaService.TotalOrderItems.FirstOrDefault(p => p.OrderID == orderID);
+        pizzaService.TotalOrderItems.Remove(result);
+        if (pizzaService.FinalPizzaPrice <= 0)
+        {
+            pizzaService.ItemCount = 0;
+            StateHasChanged();
+        }
+
+    }
+
+
+
+
+
+}

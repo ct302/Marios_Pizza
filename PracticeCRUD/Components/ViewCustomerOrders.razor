@@ -1,0 +1,89 @@
+﻿@using System.Net.Http.Json
+@using DbData;
+@using Data;
+@inject HttpClient client
+@page "/viewcustomerorders"
+
+
+
+
+<div class="container-fluid d-flex justify-content-center" style="position: relative; top: 300px;">
+
+    <table class="table-bordered" style="position: relative; bottom: 100px;">
+
+        <thead>
+            <tr>
+                <th class="col">User ID</th>
+                <th class="col">Order ID</th>
+                <th class="col">Pizza Name</th>
+                <th class="col">Pizza Size</th>
+                <th class="col">Wings Name</th>
+                <th class="col">Wings Count</th>
+                <th class="col">Drink Name</th>
+                <th class="col">Drink Size</th>
+                <th class="col">Order Total</th>
+                <th class="col">Time Ordered</th>
+
+
+            </tr>
+        </thead>
+
+
+     
+
+        @if (orders == null)
+        {
+            <tr class="spinner-grow">
+            </tr>
+        }
+
+        else
+        {
+            @foreach (var item in orders.Where(p => p.PizzaName != null || p.WingsName != null))
+            {
+    <tr>
+        <td>@item.UserID</td>
+        <td>@item.OrderID</td>
+        <td>@item.PizzaName</td>
+        <td>@item.PizzaSize</td>
+        <td>@item.WingsName</td>
+        <td>@item.WingsCount</td>
+        <td>@item.DrinkName</td>
+        <td>@item.DrinkSize</td>
+        <td>$@item.OrderTotal</td>
+        <td>@item.OrderTime</td>
+
+
+
+    </tr>
+
+
+
+
+            }
+        }
+
+
+    </table>
+</div>
+
+
+@code {
+
+
+    List<CustomerOrder> orders;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        orders = new List<CustomerOrder>();
+        orders = await client.GetFromJsonAsync<List<CustomerOrder>>($"https://mariosapi.azure-api.net/v1/api/CustomerOrder");
+
+
+
+
+    }
+
+
+
+}

@@ -1,0 +1,235 @@
+﻿@page "/pizzaDisplay"
+@inject NavigationManager navManager
+
+
+<img id="pizzaDisplayBGImg" src="/images/Brick.jpg" />
+<section class="section-2 d-flex justify-content-center" style="max-width:80vw; position: relative; margin-left: auto; margin-right: auto;">
+
+
+    <div id="pizzaContainer" class="container">
+    
+        <div class="row text-center" style="position: relative; top: 100px;">
+
+         
+
+            <div class="col-md-6 my-2 p-2 p-md-5" style="background-image: url('images/Italian_Flag.jpg'); background-size: cover; ">
+                <div class="pattern">
+
+                    <img @onclick="@( () => navManager.NavigateTo("/italianmama"))" class="w-75 mb-10 rounded position-relative pizzaImgs" src="/images/ItalMama2.png" alt="">
+                </div>
+                <h2 class="mb-4 titleText1">Italian Mama</h2>
+                <p id="pizzaDescripText" class="pt-2 pb-3">Our mission is not to outsell Hooli with a product like their latest Box 3. We are not in it for the money - we are in it to make the whole world decentralized.</p>
+                <a class="mb-4" href="#"><i class="fe fe-arrow-right ml-2"></i></a>
+            </div>
+
+
+            <div class="col-md-6 my-2 p-2 p-md-5" style=" background-image:url('images/FireBrick.jpg  '); background-size: cover;">
+                <div class="pattern">
+
+                    <img  @onclick="@( () => navManager.NavigateTo("/signaturepepperoni"))" class="w-75 mb-10 rounded position-relative pizzaImgs" src="/images/SigPepperoni.png" alt="">
+                </div>
+                
+                <h2 class="mb-4 titleText2">
+                     Signature Pepperoni
+                </h2>
+
+                <p id="pizzaDescripText" class="pt-2 pb-3">Our mission is not to outsell Hooli with a product like their latest Box 3. We are not in it for the money - we are in it to make the whole world decentralized.</p>
+                <a class="mb-4" href="#"><i class="fe fe-arrow-right ml-2"></i></a>
+            </div>
+
+
+
+            <div class="col-md-6 mb-24 my-2 p-2 p-md-5" style="background-image: url('images/SiciBG.jpg'); background-size: cover;">
+                <div class="pattern">
+
+                    <img  @onclick="@( () => navManager.NavigateTo("/sicilyspecial"))" class="w-75 mb-10 rounded position-relative pizzaImgs" src="/images/Italian_Mama.png" alt="">
+                </div>
+                <h2 class="mb-4 titleText3"> Sicily Special</h2>
+                <p id="pizzaDescripText" class="pt-2 pb-3">Our mission is not to outsell Hooli with a product like their latest Box 3. We are not in it for the money - we are in it to make the whole world decentralized.</p>
+                <a class="mb-4" href="#"><i class="fe fe-arrow-right ml-2"></i></a>
+            </div>
+
+            <div class="col-md-6 my-2 p-2 p-md-5" style="background-image: url('images/Garden.jpg'); background-size: cover;">
+                <div class="pattern">
+
+                    <img  @onclick="@( () => navManager.NavigateTo("/signaturegarden"))" class="w-75 mb-10 rounded position-relative pizzaImgs" src="/images/VegPizza.png" alt="">
+                </div>
+                <h2 class="mb-4 titleText4">Signature Garden</h2>
+                <p id="pizzaDescripText" class="pt-2 pb-3">Our mission is not to outsell Hooli with a product like their latest Box 3. We are not in it for the money - we are in it to make the whole world decentralized.</p>
+                <a class="mb-4" href="#"><i class="fe fe-arrow-right ml-2"></i></a>
+            </div>
+
+
+        </div>
+
+
+
+    </div>
+</section>
+
+
+
+
+<style>
+
+    .titleText1{
+
+        font-family:Onyx;
+        border:2px solid black;
+        border-radius: 50px;
+        background-color: seagreen;
+        color: whitesmoke;
+        font-size:3.5em;
+    }
+
+    .titleText2 {
+        font-family: Onyx;
+        border: 2px solid black;
+        border-radius: 50px;
+        background-color: orange;
+        color: firebrick;
+        font-size: 3.5em;
+    }
+
+    .titleText3 {
+        font-family: Onyx;
+        border: 2px solid black;
+        border-radius: 50px;
+        background-color: red;
+        color: seagreen;
+        font-size: 3.5em;
+    }
+
+    .titleText4 {
+        font-family: Onyx;
+        border: 2px solid black;
+        border-radius: 50px;
+        background-color: lightseagreen;
+        color: lightgreen;
+        font-size: 3.5em;
+    }
+
+
+
+
+
+    h2{
+
+
+        font-family:monospace;
+    }
+
+
+    .my-2{
+
+
+        border:2px solid black;
+        border-radius: 25px;
+    }
+
+     @@keyframes pulse {
+  0% {
+  -webkit-transform: scale3d(1, 1, 1);
+  transform: scale3d(1, 1, 1);
+  }
+  50% {
+  -webkit-transform: scale3d(1.05, 1.05, 1.05);
+  transform: scale3d(1.05, 1.05, 1.05);
+  }
+  100% {
+  -webkit-transform: scale3d(1, 1, 1);
+  transform: scale3d(1, 1, 1);
+  }
+  }
+
+    @@keyframes fadeIn {
+        0% {
+            opacity: 0;
+        }
+
+        100% {
+            opacity: 1;
+        }
+    }
+
+    #pizzaContainer {
+        animation: fadeIn 0.4s ease-in-out forwards;
+        position: relative;
+        margin-bottom: 190px;
+    }
+
+    #pizzaDescripText {
+        background-color: red;
+    }
+
+    .pizzaImgs {
+        max-width: initial;
+        max-height: 180px;
+        transition: all 1.30s;
+    }
+
+        .pizzaImgs:hover {
+            transition: all 1.30s ease-in-out;
+            filter: drop-shadow(10px 10px 5px green);
+            -webkit-filter: drop-shadow(10px 10px 5px green);
+            -moz-filter: drop-shadow(10px 10px 5px #ff0000);
+            animation: pulse 2s ease-in-out backwards;
+        }
+
+    p {
+        color: white;
+        font-family: monospace;
+        font-size: 1.5em;
+    }
+
+    h2 {
+        color: white;
+        font-family: 'pizzaria';
+        border-bottom: 3px solid green;
+        font-size: 3em;
+    }
+
+
+    #pizzaDisplayBGImg {
+        height: 100%;
+        width: 100%;
+        z-index: -4;
+        background-size: cover;
+        background-repeat: no-repeat;
+        position: fixed;
+        animation: fadeIn 0.2s ease-in-out forwards;
+    }
+
+    #pizzaDisplayMenu {
+        text-overflow: clip;
+        overflow-wrap: break-word;
+        vertical-align: text-top;
+    }
+
+    #pizzaDisplayText {
+        font-family: 'pizzaria';
+        color: firebrick;
+        font-size: 2em;
+        transition: height 1s ease-in-out;
+        animation: pulse 1.5s ease-out forwards;
+        vertical-align: text-top;
+        text-align: center;
+        position: relative;
+    }
+
+    #captionImage {
+        max-height: 100%;
+        position: absolute;
+        align-content: center;
+        right: 800px;
+        top: 0;
+        max-width: 50%;
+    }
+
+    #pizzaPNG {
+        border-radius: 15px 50px 30px 5px;
+    }
+</style>
+
+
+

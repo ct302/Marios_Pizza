@@ -1,0 +1,130 @@
+﻿@page "/vieworderhistory"
+@page "/vieworderhistory/{id}"
+@using Data
+@using System.Net.Http.Json
+@inject AppDbIdentityContext db
+@inject HttpClient client
+@inject NavigationManager navManager
+
+
+
+
+
+       <img id="bgImg" src="/images/Brick.jpg" />
+
+    @if (customerOrders == null)
+    {
+        <div class="justify-content-center d-print-flex spinner-border">
+
+        </div>
+    }
+    else
+    {
+            <div class="container-fluid" style="text-align:center; position:relative; top:20vh;
+               ">
+
+                <div style="background-color: red; border: 3px solid white; border-radius: 50px;">
+                    <h4 class="mb-4 text-center" style="font-family: Cooper; color: whitesmoke; font-size: 3em;">Order History</h4>
+
+                </div>
+
+                <div class="table-responsive" style="background-image: url(/images/CartBG.jpg);">
+                    <table class="table" style="color: white; border-bottom: solid white 2px;">
+                        <thead style="color: darkseagreen">
+                            <tr>
+                                <th scope="col">Item Name</th>
+                                <th scope="col">Item Size</th>
+                                <th scope="col">Item Price</th>
+                                <th scope="col">Order Time</th>
+                                <th scope="col">Order ID</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @foreach (var item in customerOrders.Where(p => p.UserID == id))
+                            {
+
+                              
+
+
+                                <tr>
+
+                                    <td style="border-right: solid 2px white; border-bottom: solid 2px white;">
+                                        <span style="font-family: Cooper;">
+                                            @item.PizzaName @item.WingsName
+                                            @item.DrinkName
+                                        </span>
+
+
+                                    </td>
+
+                                    <td style="border-right: solid 2px white; border-bottom: solid 2px white;">@item.PizzaSize @item.WingsCount  </td>
+
+                                    <td style="border-right: solid 2px white; border-bottom: solid 2px white; ">$@item.OrderTotal.ToString("#.##")</td>
+
+
+                                    <td style="border-top: 2px solid white; border-right: solid white 2px;">
+                                        @item.OrderTime
+                                    </td>
+                                    <td style="border-right: solid 2px white; border-bottom: solid 2px white; ">@item.OrderID</td>
+
+
+
+
+
+
+                                </tr>
+
+
+
+                            }
+
+
+
+                        </tbody>
+                    </table>
+                    <button class="btn btn-success" style="position: relative; margin-left: auto; margin-right: auto; margin-top: 45px; margin-bottom: 45px;" @onclick="@( () => navManager.NavigateTo("/", true))">Go Back</button>
+                </div>
+            </div>
+
+
+
+    }
+
+
+
+<style>
+
+
+    #wholeScreenDiv{
+
+        background-size: cover;
+        background-color:lawngreen;
+    }
+</style>
+
+
+@code {
+
+
+    string usersEmail;
+
+
+    [Parameter]
+    public string id { get; set; }
+
+    List<CustomerOrder> customerOrders;
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        id = id;
+        customerOrders = new List<CustomerOrder>();
+        customerOrders = await client.GetFromJsonAsync<List<CustomerOrder>>($"https://finaltriviamaniaapi.azure-api.net/api/CustomerOrder");
+
+
+    }
+
+}

@@ -1,0 +1,444 @@
+﻿@page "/topping"
+@inherits Code_Behind.Topping_Code_Behind
+@inject Services.PizzaService pizzaService
+@inject Services.PizzaOrder pizzaOrderService
+@inject Services.WingsService wingsService
+<h1 class="sizeDescripText text-center align-self-xl-center">Choose Extra Toppings</h1>
+
+@*First Topping Picker*@
+<div id="toppingdiv" class="container-fluid text-center" style="position: relative; top: 20px; border: 2px ridge white;">
+    <div class="row">
+
+    
+        <div class="col-6  toppingIMG">
+            <button class="btn" id="removeButton" style="display: @(hidePepperoni == true ? "" : "none");" @onclick="e => removePepperoniTopping(e, currentTopping)">Remove Pepperoni</button>
+            <p id="toppingText" class="text-center" style="display: @( hidePepperoni == false ? "" : "none")">Pepperoni</p>
+            <img id="pepperoniPizzaImg" class="img-fluid" @onclick="@(e => onToggleNameTopping(e,"Pepperoni"))" src="/Topping_Images/Pepperoni_Png.png" alt="" style="pointer-events: @( hidePepperoni == false ? "" : "none")">
+            <h1 style="color:white; display: @( hidePepperoni == true ? "" : "none"); font-size: 4em; font-family:TrapMusic;" class="text-center carousel-caption">Added</h1>
+        </div>
+
+
+        <div class="col-6   toppingIMG">
+            <button class="btn " id="removeButton" style="display: @(hideSausage == true ? "" : "none"); " @onclick="e => removeSausageTopping(e, currentTopping)">Remove Sausage</button>
+            <p id="toppingText" class="text-center" style="display: @(hideSausage == false ? "" : "none")">Sausage</p>
+
+            <img @onclick="@(e => onToggleNameTopping(e,"Sausage") )" id="sausageImg" class="img-fluid" src="/Topping_Images/Sausage.png" alt="" style="pointer-events:@(hideSausage == false ? "" : "none")">
+            <h1 style="color:white; display: @( hideSausage == true ? "" : "none"); font-size: 4em; font-family:TrapMusic;" class="text-center carousel-caption">Added</h1>
+        </div>
+
+        <div class="col-6  toppingIMG">
+            <button class="btn " id="removeButton" style="display: @(hideBacon == true ? "" : "none"); " @onclick="e => removeBaconTopping(e, currentTopping)">Remove Bacon</button>
+            <p id="toppingText" class="text-center" style="display: @(hideBacon == false ? "" : "none")">Bacon</p>
+
+            <img id="baconImg" @onclick="@( e => onToggleNameTopping(e, "Bacon"))" class="img-fluid" src="/Topping_Images/PNGPIX-COM-Bacon-PNG-Transparent-Image.png" alt="" style=" pointer-events:@(hideBacon==false ? "" : "none" )">
+            <h1 style="color:white; display: @( hideBacon == true ? "" : "none"); font-size: 4em; font-family:TrapMusic;" class="text-center carousel-caption">Added</h1>
+        </div>
+
+        <div class="col-6 toppingIMG">
+            <button class="btn " id="removeButton" style="display: @(hideGrilledChicken == true ? "" : "none"); " @onclick="e => removeGrilledChickenTopping(e, currentTopping)">Remove Grilled Chicken</button>
+            <p id="toppingText" class="text-center" style="line-height: 1.0; display:@(hideGrilledChicken == false ? "" : "none")">Grilled Chicken</p>
+
+            <img id="grilledChickenImg" @onclick="@( e => onToggleNameTopping(e, "Grilled Chicken"))" class="img-fluid" src="/Topping_Images/chicken-sliced.png" alt="" style=" pointer-events:@(hideGrilledChicken == false ? "" : "none")">
+            <h1 style="color:white; display: @( hideGrilledChicken == true ? "" : "none"); font-size: 4em; font-family:TrapMusic;" class="text-center carousel-caption">Added</h1>
+        </div>
+
+
+        <div class="col-6  toppingIMG">
+            <button class="btn " id="removeButton" style="display: @(hideOnions == true ? "" : "none"); " @onclick="e => removeOnionTopping(e, currentTopping)">Remove Onions</button>
+            <p id="toppingText" class="text-center" style="display: @(hideOnions == false ? "" : "none")">Onions</p>
+
+            <img id="onionsImg" @onclick="@( e => onToggleNameTopping(e, "Onions"))" class="img-fluid" src="/Topping_Images/Onion.png" alt="" style=" pointer-events:@(hideOnions == false ? "" : "none")">
+            <h1 style="color:white; display: @(hideOnions == true ? "" : "none"); font-size: 4em; font-family:TrapMusic;" class="text-center carousel-caption">Added</h1>
+        </div>
+
+
+        <div class="col-6 toppingIMG">
+            <button class="btn " id="removeButton" style="display: @(hidePineapples == true ? "" : "none"); " @onclick="e => removePineappleTopping(e, currentTopping)">Remove Pineapples</button>
+            <p id="toppingText" class="text-center" style="display: @(hidePineapples == false ? "" : "none")">Pineapples</p>
+            <img id="pineapplesImg" @onclick="@( e => onToggleNameTopping(e, "Pineapples"))" class="img-fluid" src="/Topping_Images/Pineapples.png" alt="" style=" pointer-events: @(hidePineapples == false ? "" : "none")">
+
+            <h1 style="color:white; display: @(hidePineapples == true ? "" : "none"); font-size: 4em; font-family:TrapMusic;" class="text-center carousel-caption">Added</h1>
+        </div>
+
+
+
+    </div>
+
+
+
+    <h1 style="color: white; font-family: 'Courier New'; border-bottom: 1px black solid;" class="text-center" >Current Item Price $@FinalPrice.ToString("#.##")</h1>
+    <h1 style="color: white; font-family: 'Courier New';" class="text-center">Current Total $@formattedDisplayTotalPrice</h1>
+</div>
+
+        <BSModal IgnoreClickOnBackdrop="true" IgnoreEscape="true" @ref="VerticallyCentered" IsCentered="true">
+            <BSModalHeader OnClick="@onToggle">Add to Pizza?</BSModalHeader>
+            <BSModalBody style="background-color: seagreen;"><p>@currentTopping $1.99</p></BSModalBody>
+            <BSModalFooter>
+                <BSButton Color="Color.Secondary" @onclick="@onToggle">Close</BSButton>
+                <BSButton Color="Color.Primary" @onclick="@addTopping">Add to Pizza</BSButton>
+            </BSModalFooter>
+        </BSModal>
+
+
+
+
+
+
+
+
+
+<style>
+
+    .img-fluid{
+        max-height:100%;
+        max-width:100%;
+        position: relative;
+
+    }
+
+    #removeButton{
+        position: relative;
+        top: 15px;
+        z-index: 50;
+    }
+
+    #toppingdiv {
+        background: rgb(46,130,27);
+        background: linear-gradient(0deg, rgba(46,130,27,1) 18%, rgba(255,0,0,1) 94%);
+        text-align: center;
+    }
+
+
+    .toppingContainer {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-content: stretch;
+        align-items: flex-start;
+    }
+
+    #toppingText{
+        font-family:Consolas;
+        color: white;
+        font-size: 2em;
+    }
+
+    #removeButton{
+
+        background-color: white;
+        color: seagreen;
+        border-radius: 10px;
+        height: auto;
+    }
+
+    #pepperoniPizzaImg {
+        filter: @(hidePepperoni == false ? "" : "blur(4px)");
+        transition: all 2s ease-in-out;
+        max-width: 100%;
+        max-height: 150px;
+        height: auto;
+    }
+    #pepperoniPizzaImg:hover {
+            background-color: @(hidePepperoni == false ? "seagreen" : "");
+            transition: all 1s ease-in-out;
+            border-radius: 10px;
+        }
+
+    #sausageImg {
+        filter: @(hideSausage == false ? "" : "blur(4px)");
+        transition: all 2s ease-in-out;
+        max-width: 100%;
+        max-height: 150px;
+        height: auto;
+    }
+    #sausageImg:hover{
+        background-color: @(hideSausage == false ? "seagreen" : "");
+            transition: all 1s ease-in-out;
+            border-radius: 10px;
+    }
+
+    #baconImg {
+        filter: @(hideBacon == false ? "" : "blur(4px)");
+        transition: all 2s ease-in-out;
+        max-width: 100%;
+        max-height: 150px;
+        height: auto;
+    }
+    #baconImg:hover{
+        background-color: @(hideBacon == false ? "seagreen" : "");
+            transition: all 1s ease-in-out;
+            border-radius: 10px;
+    }
+
+    #grilledChickenImg {
+        filter: @(hideGrilledChicken == false ? "" : "blur(4px)");
+        transition: all 2s ease-in-out;
+        max-width: 100%;
+        max-height: 150px;
+        height: auto;
+    }
+    #grilledChickenImg:hover{
+        background-color: @(hideGrilledChicken == false ? "seagreen" : "");
+            transition: all 1s ease-in-out;
+            border-radius: 10px;
+    }
+
+    #onionsImg {
+        filter: @(hideOnions == false ? "" : "blur(4px)");
+        transition: all 2s ease-in-out;
+        max-width: 100%;
+        max-height: 150px;
+        height: auto;
+    }
+    #onionsImg:hover {
+        background-color: @(hideOnions == false ? "seagreen" : "");
+            transition: all 1s ease-in-out;
+            border-radius: 10px;
+    }
+
+    #pineapplesImg {
+        filter: @(hidePineapples == false ? "" : "blur(4px)");
+        transition: all 2s ease-in-out;
+        max-width: 100%;
+        max-height: 150px;
+        height: auto;
+    }
+    #pineapplesImg:hover{
+            background-color: @(hidePineapples == false ? "seagreen" : "");
+            transition: all 1s ease-in-out;
+            border-radius: 10px;
+    }
+
+
+
+
+
+
+
+
+    .toppingIMG {
+        height: 250px;
+        width: 250px;
+        border: 2px ridge wheat;
+        text-overflow: clip;
+        text-align: center;
+        overflow-wrap: break-word;
+    }
+
+
+    #toppingPicker {
+        animation: flip-in-hor-bottom 2s ease-in-out forwards;
+        transition: all 2s ease-in-out;
+    }
+
+
+
+    @@keyframes flip-in-hor-bottom {
+        0% {
+            -webkit-transform: rotateX(80deg);
+            transform: rotateX(80deg);
+            opacity: 0;
+        }
+
+        100% {
+            -webkit-transform: rotateX(0);
+            transform: rotateX(0);
+            opacity: 1;
+        }
+    }
+</style>
+
+
+@code {
+
+    BSModal VerticallyCentered;
+
+    string currentTopping = "";
+
+    void onToggle(MouseEventArgs e)
+    {
+        VerticallyCentered.Toggle();
+
+    }
+
+    void onToggleNameTopping(MouseEventArgs e, string topping)
+    {
+        VerticallyCentered.Toggle();
+        currentTopping = topping;
+
+    }
+
+    double formattedTotalPrice => FinalPrice + pizzaService.TotalOrderPrice;
+
+    string formattedDisplayTotalPrice => formattedTotalPrice.ToString("#.##");
+
+
+
+    public bool hidePepperoni { get; set; }
+
+    public bool hideSausage { get; set; }
+
+    public bool hideBacon { get; set; }
+
+    public bool hideGrilledChicken { get; set; }
+
+    public bool hideOnions { get; set; }
+
+    public bool hidePineapples { get; set; }
+
+
+
+    void addTopping(MouseEventArgs e)
+    {
+        switch (currentTopping)
+        {
+            case "Pepperoni":
+                onToggle(e);
+                pizzaService.ExtraToppings.Add("Pepperoni");
+                FinalPrice = FinalPrice + 1.99;
+                pizzaService.FinalPizzaPrice = FinalPrice;
+                hidePepperoni = true;
+                StateHasChanged();
+                break;
+
+
+
+
+            case "Sausage":
+                onToggle(e);
+                pizzaService.ExtraToppings.Add("Sausage");
+
+                FinalPrice = FinalPrice + 1.99;
+                pizzaService.FinalPizzaPrice = FinalPrice;
+                hideSausage = true;
+                StateHasChanged();
+                break;
+
+
+            case "Bacon":
+                onToggle(e);
+                pizzaService.ExtraToppings.Add("Bacon");
+                FinalPrice = FinalPrice + 1.99;
+                pizzaService.FinalPizzaPrice = FinalPrice;
+                hideBacon = true;
+                StateHasChanged();
+                break;
+
+            case "Grilled Chicken":
+                onToggle(e);
+                pizzaService.ExtraToppings.Add("Grilled Chicken");
+                FinalPrice = FinalPrice + 1.99;
+                pizzaService.FinalPizzaPrice = FinalPrice;
+                hideGrilledChicken = true;
+                StateHasChanged();
+                break;
+
+
+            case "Onions":
+                onToggle(e);
+                pizzaService.ExtraToppings.Add("Onions");
+                FinalPrice = FinalPrice + 1.99;
+                pizzaService.FinalPizzaPrice = FinalPrice;
+                hideOnions = true;
+                StateHasChanged();
+                break;
+
+
+            case "Pineapples":
+                onToggle(e);
+                pizzaService.ExtraToppings.Add("Pineapples");
+                FinalPrice = FinalPrice + 1.99;
+                pizzaService.FinalPizzaPrice = FinalPrice;
+                hidePineapples = true;
+                StateHasChanged();
+                break;
+
+
+
+
+
+            default:
+                break;
+        }
+    }
+
+
+    void removePepperoniTopping(MouseEventArgs e, string topping)
+    {
+        FinalPrice = FinalPrice - 1.99;
+        pizzaService.FinalPizzaPrice = FinalPrice;
+        pizzaService.ExtraToppings.Remove(currentTopping);
+        hidePepperoni = false;
+        StateHasChanged();
+
+
+
+    }
+
+    void removeSausageTopping(MouseEventArgs e, string topping)
+    {
+        FinalPrice = FinalPrice - 1.99;
+        pizzaService.FinalPizzaPrice = FinalPrice;
+        pizzaService.ExtraToppings.Remove(currentTopping);
+        hideSausage = false;
+        StateHasChanged();
+
+
+
+    }
+
+    void removeBaconTopping(MouseEventArgs e, string topping)
+    {
+        FinalPrice = FinalPrice - 1.99;
+        pizzaService.FinalPizzaPrice = FinalPrice;
+        pizzaService.ExtraToppings.Remove(currentTopping);
+        hideBacon = false;
+        StateHasChanged();
+
+
+
+    }
+
+    void removeGrilledChickenTopping(MouseEventArgs e, string topping)
+    {
+        FinalPrice = FinalPrice - 1.99;
+        pizzaService.FinalPizzaPrice = FinalPrice;
+        pizzaService.ExtraToppings.Remove(currentTopping);
+        hideGrilledChicken = false;
+        StateHasChanged();
+
+
+
+    }
+
+    void removeOnionTopping(MouseEventArgs e, string topping)
+    {
+        FinalPrice = FinalPrice - 1.99;
+        pizzaService.FinalPizzaPrice = FinalPrice;
+        pizzaService.ExtraToppings.Remove(currentTopping);
+        hideOnions = false;
+        StateHasChanged();
+
+    }
+
+    void removePineappleTopping(MouseEventArgs e, string topping)
+    {
+        FinalPrice = FinalPrice - 1.99;
+        pizzaService.FinalPizzaPrice = FinalPrice;
+        pizzaService.ExtraToppings.Remove(currentTopping);
+        hidePineapples = false;
+        StateHasChanged();
+
+    }
+
+
+
+
+
+
+
+
+
+
+}

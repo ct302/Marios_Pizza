@@ -1,0 +1,254 @@
+﻿@inject NavigationManager navManager
+@inject Services.PizzaService pizzaService
+@inject PizzaOrder grabCurrentUserIDService
+@inject AuthenticationStateProvider authManager
+@inject AppDbIdentityContext db
+@using Data
+
+ 
+
+<div class="navbar navbar-expand-lg navbar-light fixed-top heightAdjustment" id="myNavBar">
+    <a id="logoText" class="navbar-brand" href="">Marios Pizza</a>
+
+
+    
+
+        <AuthorizeView Roles="Admin, Normal">
+
+            <Authorized>
+               
+
+
+            </Authorized>
+        </AuthorizeView>
+
+  
+    <AuthorizeView>
+
+        <Authorized>
+
+    @*Cart*@
+    <span  id="cartDiv" @onclick="@( () => navManager.NavigateTo("/cart") )" class="badge badge-secondary badge-pill" style="display: @(headerItemCount > 0 ? "" : "none")">
+        @headerItemCount
+        <i class="fas fa-shopping-cart"></i>
+    </span>
+
+
+        </Authorized>
+    </AuthorizeView>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon bg-light" @onclick="ToggleNavMenu"></span>
+    </button>
+
+    <div class="@NavMenuCssClass navbar-collapse" id="navBarDropdown" style="text-overflow: clip;">
+        <div class="navbar-nav" style="font-size: 2em;" id="dropdownMenu">
+
+            <LoginDisplay />
+
+            <a id="navLink" class=" text-center nav-link " href="/aboutus">About Us</a>
+            <a id="navLink" class=" nav-link text-center" href="/contactus">Contact Us</a>
+            <AuthorizeView Roles="Admin, Normal">
+
+            
+                <NotAuthorized>
+                    <a id="navLink" class="  nav-link text-center" href="Identity/Account/Register">Register</a>
+                    <a id="navLink" class="  nav-link text-center" href="Identity/Account/Login">Login</a>
+
+
+                </NotAuthorized>    
+            </AuthorizeView>
+
+            <AuthorizeView Roles="Normal, Admin">
+
+                <Authorized>
+                    @*Getting Users ID*@
+                    @{
+                        UserID = db.Users.Where(p => p.Email == context.User.Identity.Name).FirstOrDefault().Id;
+                    }
+
+                    <a id="navLink" class="  nav-link text-center" href="/cart" tabindex="-1" aria-disabled="true">Cart</a>
+
+                </Authorized>
+            </AuthorizeView>
+
+
+            <AuthorizeView Roles="Admin">
+
+
+
+                <a style="display:@(collapseNavMenu == false ? "" : "none")" id="navLink" class="  nav-link text-center" href="/viewcustomers" tabindex="-1" aria-disabled="true">Customers</a>
+            </AuthorizeView>
+
+            <AuthorizeView Roles="Admin, Normal">
+
+                <a style="display:@(collapseNavMenu == false ? "" : "none")" @onclick="@( () => navManager.NavigateTo($"/vieworderhistory/{UserID}"))" id="navLink" class="  nav-link text-center">View Order History</a>
+                <div class="d-flex justify-content-center">
+                    <form style="display:block;" class="nav-link text-center navbar-brand" method="post" action="Identity/Account/Logout">
+
+                        <button type="submit" class="nav-link btn btn-link" style="color: white;">Log out</button>
+                    </form>
+
+                </div>
+
+
+
+            </AuthorizeView>
+
+
+
+        </div>
+    </div>
+
+
+</div>
+ 
+
+<style>
+
+    #dropdownMenu{
+     background-color: firebrick;
+    }
+
+
+    #cartDiv:hover{
+
+        color: seagreen;
+        transition: all 1s ease-out;
+        
+
+    }
+
+
+    .nav-link {
+        font-family: 'Tempus Sans ITC';
+    }
+
+    #navLink{
+        color: seagreen;
+        font-size: 1.2em;
+        font-weight: bolder;
+    }
+
+
+
+
+        #navLink:after {
+            content: "";
+            position: relative;
+            display: block;
+            width: auto;
+            height: 2px;
+            background-color: white;
+            border-bottom-left-radius: 50px 50px;
+            border-bottom-right-radius: 50px 50px;
+            bottom: 10px;
+        }
+
+
+
+
+    #navLink:hover {
+        color: darkgreen;
+        transition: all 1s ease-out;
+    }
+
+    .navItems:hover {
+        color: darkolivegreen;
+        transition: all 1s ease-out;
+    }
+
+    #logoText {
+        color: darkolivegreen;
+        text-shadow: 2px 2px #FF0000;
+        font-size: 2.4em;
+        font-family: 'Times New Roman';
+        text-wrap: normal;
+        font-weight: bolder;
+        animation: changeColors 30s ease-in-out forwards;
+        
+    }
+     
+
+
+      .heightAdjustment{
+
+        height: 80px;
+        border-bottom-left-radius: 50px 50px;
+        border-bottom-right-radius: 50px 50px;
+
+      }
+
+    #myNavBar {
+        /*background-image: url("/images/Italian_Flag.jpg" );
+        background-size: cover;*/
+        background-color: firebrick;
+    }
+
+    @@keyframes changeColors {
+  0%   {color:seagreen;}
+  25%  {color:firebrick;}
+  50%  {color:whitesmoke;}
+  75%  {color:black;}
+  100% {color:burlywood;}
+}
+</style>
+
+@code {
+
+
+    public string email;
+
+    public string UserID;
+
+    string y = DateTime.Now.ToShortTimeString();
+
+    [Parameter]
+    public int headerItemCount { get; set; }
+
+    private bool collapseNavMenu = true;
+
+    bool areLinksVisible = false;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+
+
+
+    void changeLocation(object sender, LocationChangedEventArgs args)
+    {
+        collapseNavMenu = true;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+        areLinksVisible = !areLinksVisible;
+    }
+
+
+
+    protected override void OnInitialized()
+    {
+        email = "";
+        UserID = "";
+        navManager.LocationChanged += changeLocation;
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
+
+
+

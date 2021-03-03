@@ -1,0 +1,82 @@
+﻿@page "/aboutus"
+
+
+
+<img src="/images/Italian_Flag.jpg" id="pizzaDisplayBGImg" />
+
+<section class="py-5" style="position: relative; top: 100px;">
+    <div class="container text-center">
+        <h2 style="font-family: Cooper; font-size: 3em; color: seagreen; text-shadow: 1px;">Mario's Pizza</h2>
+        <p style="border-bottom: firebrick 2px solid; color: black; font-family: monospace; font-size: 3em;">Est. 1997</p>
+
+        <div style="background-color: seagreen; border: 3px solid red; border-radius:50px; ">
+        <p style="font-family: Castellar; color: firebrick; font-size: 2em;">Address: <span id="infoText">2536 Jump Street San Diego CA, 92110</span></p>
+        <p style="font-family: Castellar; color: firebrick; font-size: 2em;">Phone: <span id="infoText">619-283-9052</span></p>
+
+        </div>
+
+
+        <BlazorStrap.BSCarousel NumberOfItems="activePicture.Count()">
+
+            <div class="carousel-inner my-5 img-fluid" id="picCarousel">
+                @for (int i = 0; i < activePicture.Count(); i++)
+                {
+                    <BlazorStrap.BSCarouselItem Src="@activePicture[i]" style="width: 100%; height: 400px; object-fit: fill;" />
+                }
+                <BlazorStrap.BSCarouselControl CarouselDirection="BlazorStrap.CarouselDirection.Next" NumberOfItems="activePicture.Count()" />
+                <BlazorStrap.BSCarouselControl CarouselDirection="BlazorStrap.CarouselDirection.Previous" NumberOfItems="activePicture.Count()" />
+            </div>
+
+        </BlazorStrap.BSCarousel>
+
+
+
+        <div class="row text-left" style="color: black; font-size: 2em; margin-bottom: 10vh; ">
+            <div class="col-lg-8 mx-auto" style="background-color: seagreen; border: 3px solid white; border-radius: 50px; max-width:80vw; ">
+                <p class="lead text-center">A Story about how we got started! (Lorum Ipsum)</p>
+
+                <p>This is a short story about how we uncovered an insane problem with our ICO, fixed it, and still managed to secure vast funding.</p>
+                <ul>
+                    <li>Lorum Ipsum demo Text</li>
+                    <li>secrets of decentralization</li>
+                    <li>why strong tea isn't good</li>
+                    <li>Capitalize on low hanging fruit to identify a ballpark value added.</li>
+                </ul>
+                <p>I feel like not everybody outside of Pied Piper knows it, so I wanted to make it clear why I'm the best programmer in the world.</p>
+                <blockquote class="blockquote text-center p-5 my-2">
+                    <p class="mb-3">"Today's user wants access to all their files, from all of their devices, instantly. That's why cloud-based is the Holy Grail. Now Dropbox is winning. But when it comes to audio and video files, they might as well be called Dripbox."</p>
+                    <footer class="blockquote-footer mb-3">Erlich Bachman in <cite>S01E03</cite></footer>
+                </blockquote>
+                <p class="mb-3">I feel like not everybody outside of Pied Piper knows it, so I wanted to make it clear why I'm the best programmer in the world.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<style>
+
+
+    #infoText{
+        font-family:Centaur;
+        color: black;
+
+    }
+
+    #pizzaDisplayBGImg {
+        height: 100%;
+        width: 100%;
+        z-index: -100;
+        background-size: cover;
+        background-repeat: no-repeat;
+        position: fixed;
+        animation: fadeIn 0.2s ease-in-out forwards;
+    }
+
+
+</style>
+
+@code {
+
+    string[] activePicture = new string[] { "/images/Mario_inside.jpg", "/images/ThinPizza.jpg", "/images/PizzaBG.jpg" };
+}

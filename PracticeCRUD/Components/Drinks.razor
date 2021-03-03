@@ -1,0 +1,472 @@
+﻿@page "/drinks"
+@inject NavigationManager navManager
+@inject DrinksService drinksService
+@inject PizzaService pizzaService
+@using BlazorStrap
+@using Data
+
+
+
+<img id="pizzaDisplayBGImg" src="/images/Brick.jpg" />
+
+<section class="section-2" style="margin:30px;">
+
+
+
+    <div id="pizzaContainer" class="container">
+
+
+        @*BUTTON DIV*@
+        <div class="d-flex justify-content-center" style="position:relative; top: 100px;">
+
+            <button id="myButton" @onclick="@( () => navManager.NavigateTo("/") )" class="btn btn-success">Go Back</button>
+
+        </div>
+
+
+        <div class="row text-center" style="position: relative; top: 100px;">
+
+
+
+
+            @*//Coke Div*@
+            <div id="cokeDiv" class="col-md-6 my-2 p-2 p-md-5 @(hideCokeDisplay == true ? "hideCokeDiv" : "")" style="border:2px solid black; font-family:Papyrus; background-image: url('images/CokeBG.jpg'); background-size: cover;">
+                <div class="pattern">
+
+                    <img @onclick="@( p  => handleDrinkclickCoke(p, "Coke") )" class="w-75 mb-10 rounded position-relative pizzaImgs" src="/images/CokeCan.png" alt="">
+                </div>
+                <h2 class="mb-4" style="font-family:Impact; text-shadow:3px red; color: snow">Coca Cola</h2>
+                <p id="pizzaDescripText" class="pt-2 pb-3">
+                    Coca-Cola
+                </p>
+            </div>
+            <span style="display: inline-flex;">
+                @*<button style= "height: 200px; width: 100px;" class="btn btn-success" @onclick ="@( () => removeDrink(drinksService.FinalDrinkPrice, drinksService.Quantity, "Coke") )">Remove from Order?</button>*@
+            </span>
+
+
+
+            @*Sprite Div*@
+            <div id="spriteDiv" class="col-md-6 my-2 p-2 p-md-5 @(hideSpriteDisplay == true ? "hideSpriteDiv" : "")" style=" border: 2px solid white; font-family:Papyrus; background-image: url('images/SpriteBG.jpg'); background-size: cover;">
+                <div class="pattern">
+
+                    <img @onclick="@(p => handleDrinkclickSprite(p, "Sprite") )" class="w-75 mb-10 rounded position-relative pizzaImgs" src="/images/unnamed.png" alt="">
+                </div>
+
+                <h2 class="mb-4" style="font-family:impact; text-shadow: 1px seagreen;">
+                    Sprite
+                </h2>
+
+
+                <p id="pizzaDescripText" class="pt-2 pb-3" style="position: relative; color: lightyellow">
+                    Sprite
+                </p>
+
+            </div>
+
+
+            @*Remove Buttons*@
+            <div class="d-flex justify-content-center" style="position: relative; margin-left: auto; margin-right: auto; max-width:80vw;">
+                <button style="height:200px; width:200px; background-color: red; color: white;" class="btn btn-outline-success" @onclick="@( () => removeDrink(drinksService.FinalDrinkPrice, drinksService.Quantity,"Coke") )">Remove Coke</button>
+                <button style="height:200px; width:200px; background-color: green; color: white;" class="btn btn-outline-success" @onclick="@( () => removeDrink(drinksService.FinalDrinkPrice, drinksService.Quantity, "Sprite") )">Remove Sprite</button>
+
+            </div>
+
+
+        </div>
+
+    </div>
+</section>
+
+
+<BSModal @ref="VerticallyCentered" IsCentered="true">
+    <BSModalHeader OnClick="@onToggle" Class="myModal"> @currentSoda</BSModalHeader>
+    <BSModalBody>
+        <div class="d-flex m-5 p-4 justify-content-center text-monospace">
+
+            <h1 class=" text-danger align-self-center">@quantityErrorMsg</h1>
+            <p style="color: pink;">Add @currentSoda to Order?</p>
+
+
+            <select class="form-select" aria-label="Default select example" @bind="drinksService.FinalDrinkPrice">
+                <option selected>Select Size</option>
+                <option value="@drinksService.CannedSoda">12 Oz Can $1.99</option>
+                <option value="@drinksService.Two_Liter">2 Liter $3.99</option>
+            </select>
+
+
+            <p style="color: pink;">Quantity</p>
+
+
+            <select class="form-select" aria-label="Default select example" @bind="drinksService.Quantity">
+                <option selected>Select Quantity</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+
+
+
+        </div>
+    </BSModalBody>
+    <BSModalFooter>
+        <BSButton Color="Color.Secondary" @onclick="@handleModalClose">Close</BSButton>
+        <BSButton Color="Color.Primary" @onclick="@( () => addDrinkToOrder(drinksService.Quantity) )">Save Changes</BSButton>
+    </BSModalFooter>
+</BSModal>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style>
+
+
+    #myButton {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    #spriteDiv {
+        background: rgb(14,14,14);
+        background: linear-gradient(72deg, rgba(14,14,14,0.022120786516853896) 0%, rgba(20,255,0,1) 94%);
+        font-family:Papyrus;
+    }
+
+    #cokeDiv {
+        background: rgb(14,14,14);
+        background: linear-gradient(72deg, rgba(14,14,14,0.1934691011235955) 0%, rgba(255,0,0,1) 94%);
+        font-family:Papyrus;
+    }
+
+    .hideCokeDiv {
+        filter: grayscale(50%) blur(5px);
+        -webkit-filter: grayscale(50%) blur(5px);
+        pointer-events: none;
+    }
+    .hideSpriteDiv {
+        filter: grayscale(50%) blur(5px);
+        -webkit-filter: grayscale(50%) blur(5px);
+        pointer-events: none;
+    }
+
+
+    .myModal{
+
+      text-align: center;
+      background-color:@( currentSoda == "Coke" ? "Red" : "Green");
+      color: white;
+
+
+    }
+
+    .centered {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        /* bring your own prefixes */
+        transform: translate(-50%, -50%);
+        background-color: white;
+        color: black;
+
+    }
+
+
+    @@keyframes pulse {
+        0% {
+            -webkit-transform: scale3d(1, 1, 1);
+            transform: scale3d(1, 1, 1);
+        }
+
+        50% {
+            -webkit-transform: scale3d(1.05, 1.05, 1.05);
+            transform: scale3d(1.05, 1.05, 1.05);
+        }
+
+        100% {
+            -webkit-transform: scale3d(1, 1, 1);
+            transform: scale3d(1, 1, 1);
+        }
+    }
+
+    @@keyframes fadeIn {
+        0% {
+            opacity: 0;
+        }
+
+        100% {
+            opacity: 1;
+        }
+    }
+
+    #pizzaContainer {
+        animation: fadeIn 0.4s ease-in-out forwards;
+        position: relative;
+        margin-bottom: 190px;
+    }
+
+    #pizzaDescripText {
+        background-color: dimgrey;
+    }
+
+    .pizzaImgs {
+        max-width: initial;
+        max-height: 180px;
+        transition: all 1.30s;
+    }
+
+        .pizzaImgs:hover {
+            transition: all 1.30s ease-in-out;
+            filter: drop-shadow(10px 10px 5px green);
+            -webkit-filter: drop-shadow(10px 10px 5px green);
+            -moz-filter: drop-shadow(10px 10px 5px #ff0000);
+            animation: pulse 2s ease-in-out backwards;
+        }
+
+    p {
+        color: white;
+        font-family: Rockwell;
+        font-size: 1.5em;
+    }
+
+    h2 {
+        color: white;
+        font-family: 'pizzaria';
+        border-bottom: 3px solid green;
+        font-size: 3em;
+    }
+
+
+    #pizzaDisplayBGImg {
+        height: 100%;
+        width: 100%;
+        z-index: -4;
+        background-size: cover;
+        background-repeat: no-repeat;
+        position: fixed;
+        animation: fadeIn 0.2s ease-in-out forwards;
+    }
+
+    #pizzaDisplayMenu {
+        text-overflow: clip;
+        overflow-wrap: break-word;
+        vertical-align: text-top;
+    }
+
+    #pizzaDisplayText {
+        font-family: 'pizzaria';
+        color: firebrick;
+        font-size: 2em;
+        transition: height 1s ease-in-out;
+        animation: pulse 1.5s ease-out forwards;
+        vertical-align: text-top;
+        text-align: center;
+        position: relative;
+    }
+
+    #captionImage {
+        max-height: 100%;
+        position: absolute;
+        align-content: center;
+        right: 800px;
+        top: 0;
+        max-width: 50%;
+    }
+
+    #pizzaPNG {
+        border-radius: 15px 50px 30px 5px;
+    }
+</style>
+
+
+@code {
+
+    BSModal VerticallyCentered;
+
+    string currentSoda;
+
+    bool hideCokeDisplay = false;
+    bool hideSpriteDisplay = false;
+    bool cokeWasClicked = false;
+    bool spritewasclicked = false;
+
+    string drinkName;
+    string drinkSize;
+    string quantityErrorMsg = "";
+
+
+    void handleModalClose(MouseEventArgs e)
+    {
+
+        onToggle(e);
+        quantityErrorMsg = "";
+    }
+
+
+    void handleDrinkclickCoke(MouseEventArgs e, string drink)
+    {
+        VerticallyCentered.Toggle();
+        currentSoda = drink;
+        drinksService.DrinkName = drink;
+        drinkName = "Coke";
+        //cokeWasClicked = true;
+
+
+
+
+    }
+
+    void handleDrinkclickSprite(MouseEventArgs e, string drink)
+    {
+        VerticallyCentered.Toggle();
+        currentSoda = drink;
+        drinkName = drink;
+        drinksService.DrinkName = drink;
+        drinkName = "Sprite";
+        //spritewasclicked = true;
+
+
+
+
+    }
+
+
+    void removeDrink(double drinkPrice, int quantity, string drinkName)
+    {
+        pizzaService.DrinkName = null;
+        drinksService.FinalDrinkPrice -= drinkPrice;
+        drinksService.Quantity -= quantity;
+        pizzaService.TotalOrderPrice -= drinksService.FinalDrinkPrice;
+        pizzaService.ItemCount -= quantity;
+
+        if (drinkName == "Coke")
+        {
+            hideCokeDisplay = false;
+            cokeWasClicked = false;
+        }
+        else if (drinkName == "Sprite")
+        {
+            hideSpriteDisplay = false;
+            spritewasclicked = false;
+        }
+        InvokeAsync(StateHasChanged);
+    }
+
+
+
+    void addDrinkToOrder(int quantity)
+    {
+
+        @if (drinksService.Quantity < 1)
+        {
+            quantityErrorMsg = "Please Select Quantity!";
+
+        }
+
+        else
+        {
+
+
+            pizzaService.ItemCount++;
+            drinksService.FinalDrinkPrice = drinksService.FinalDrinkPrice * drinksService.Quantity;
+            pizzaService.TotalOrderPrice += drinksService.FinalDrinkPrice;
+
+
+            @if (drinksService.DrinkName == "Sprite")
+            {
+                spritewasclicked = true;
+                hideSpriteDisplay = true;
+                pizzaService.DrinkName = "Sprite";
+                pizzaService.DrinkSize = drinkSize;
+                pizzaService.finalDrinkPrice = drinksService.FinalDrinkPrice;
+                addToCart();
+
+            }
+
+            else if (drinksService.DrinkName == "Coke")
+            {
+                cokeWasClicked = true;
+
+                if (cokeWasClicked == true)
+                {
+                    hideCokeDisplay = true;
+                    pizzaService.DrinkName = "Coke";
+                    pizzaService.DrinkSize = drinkSize;
+                    pizzaService.finalDrinkPrice = drinksService.FinalDrinkPrice;
+                    addToCart();
+
+
+                }
+
+            }
+
+
+
+            VerticallyCentered.Toggle();
+            drinksService.Quantity = 0;
+
+
+
+        }
+
+
+
+
+    }
+
+
+
+
+
+    void addToCart()
+    {
+
+        pizzaService.CustomerCartOrder.Add($"{new Random().Next(10, 99).ToString()} {pizzaService.Pizza_Size} {pizzaService.Pizza_Name}", pizzaService.FinalPizzaPrice);
+
+        pizzaService.CurrentOrder = new CustomerOrder()
+        {
+
+
+            FinalItemPrice = drinksService.FinalDrinkPrice,
+            DrinkName = drinksService.DrinkName,
+            DrinkSize = drinksService.DrinkType,
+            DrinkQuantity = drinksService.Quantity,
+            OrderID = Guid.NewGuid().ToString()
+
+
+
+
+
+        };
+
+        drinksService.DrinkType = "";
+        pizzaService.TotalOrderItems.Add(pizzaService.CurrentOrder);
+        drinksService.DrinkName = "";
+        StateHasChanged();
+        pizzaService.TotalOrderPrice += pizzaService.FinalPizzaPrice;
+        pizzaService.ExtraToppings = new List<string>();
+
+
+
+    }
+
+
+    bool drinkClicked = false;
+
+    void onToggle(MouseEventArgs e)
+    {
+        VerticallyCentered.Toggle();
+
+    }
+}

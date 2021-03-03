@@ -1,0 +1,321 @@
+@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
+
+body::-webkit-scrollbar {
+    width: 1em;
+}
+
+body::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 6px rgba(100, 2, 0, 0.3);
+}
+
+body::-webkit-scrollbar-thumb {
+    background-color: seagreen;
+    outline: 4.5px solid red;
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+        transform: rotate3d(90deg);
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        color: #001F3F;
+    }
+
+    100% {
+        color: #FF4136;
+    }
+}
+
+@keyframes text-shadow-pop-top {
+    0% {
+        text-shadow: 0 0 #555555, 0 0 #555555, 0 0 #555555, 0 0 #555555, 0 0 #555555, 0 0 #555555, 0 0 #555555, 0 0 #555555;
+        -webkit-transform: translateY(0);
+        transform: translateY(0);
+    }
+
+    100% {
+        text-shadow: 0 -1px #555555, 0 -2px #555555, 0 -3px #555555, 0 -4px #555555, 0 -5px #555555, 0 -6px #555555, 0 -7px #555555, 0 -8px #555555;
+        -webkit-transform: translateY(8px);
+        transform: translateY(8px);
+    }
+}
+
+@keyframes tracking-out-expand-fwd-bottom {
+    0% {
+        -webkit-transform: translateZ(0) translateY(0);
+        transform: translateZ(0) translateY(0);
+        opacity: 1;
+    }
+
+    60% {
+        opacity: 0.8;
+    }
+
+    100% {
+        letter-spacing: 1em;
+        -webkit-transform: translateZ(300px) translateY(200px);
+        transform: translateZ(300px) translateY(200px);
+        opacity: 0;
+    }
+}
+
+@keyframes puff-out-center {
+    0% {
+        -webkit-transform: scale(1);
+        transform: scale(1);
+        -webkit-filter: blur(0px);
+        filter: blur(0px);
+        opacity: 1;
+    }
+
+    100% {
+        -webkit-transform: scale(2);
+        transform: scale(2);
+        -webkit-filter: blur(4px);
+        filter: blur(4px);
+        opacity: 0;
+    }
+}
+
+
+#videoAnimation {
+    animation: tracking-out-expand-fwd-bottom 1s ease-in-out infinite;
+}
+
+.videoInsert {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: -100;
+    background-size: cover;
+    overflow: hidden;
+    animation: fade-in 0.5s ease-out forwards;
+}
+
+.puff-out-center {
+    -webkit-animation: puff-out-center 1s cubic-bezier(0.165, 0.840, 0.440, 1.000) both;
+    animation: puff-out-center 1s cubic-bezier(0.165, 0.840, 0.440, 1.000) both;
+}
+
+.text-shadow-pop-top {
+    -webkit-animation: text-shadow-pop-top 0.6s ease-out both;
+    animation: text-shadow-pop-top 0.6s ease-out both;
+}
+
+.sizeDescripText {
+    font-family: Papyrus;
+    letter-spacing: 5px;
+    font-size: 4em;
+    color: whitesmoke;
+}
+
+
+
+#borderimg1 {
+    border: 10px solid transparent;
+    padding: 15px;
+    border-image: url('images/brick.jpg') 30 stretch;
+    border-style: dotted;
+}
+
+
+
+#testText {
+    font-family: 'pizzaria';
+    color: purple;
+    font-size: 6em;
+    transition: all 1s ease-in-out;
+}
+
+
+#menuOptions {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-content: stretch;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    position: relative;
+    top: 15vh;
+    margin-bottom: 180px;
+}
+
+
+
+#menuOptionsAnimating {
+    transform: translate3d(50%);
+    pointer-events: none;
+    animation: text-shadow-pop-top 0.5s linear forwards;
+    display: none;
+}
+
+.pizzaText {
+    font-size: 10px;
+}
+
+.pizzaFont {
+    font-family: 'pizzaria';
+    color: white;
+    font-size: 6em;
+    position: relative;
+    margin-right: auto;
+    margin-left: auto;
+    transition: all 2s ease-in-out;
+}
+    .pizzaFont:after {
+        content: "";
+        height: 20px;
+        width: auto;
+        display: block;
+        background: rgb(46,130,27);
+        background: linear-gradient(0deg, rgba(46,130,27,1) 18%, rgba(255,0,0,1) 94%);
+        position: relative;
+        bottom: 20px;
+        clip-path: polygon(80% 10%, 61% 35%, 98% 35%, 68% 57%, 9% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+        filter: blur(3px);
+    }
+
+  
+
+    .pizzaFont::first-letter {
+        color: green;
+        font-family: Broadway;
+        animation: pulse 5s alternate forwards;
+    }
+
+    .pizzaFont:hover {
+        font-family: 'pizzaria';
+        color: red;
+        font-size: 10em;
+        animation-name: text-shadow-pop-top;
+        animation-duration: 12s;
+        animation-timing-function: ease-out;
+        animation-fill-mode: both;
+        opacity: 0.7;
+        box-shadow: 0px 0px 56px 30px #ff0000;
+        transition: ease-out 2s;
+    }
+
+
+
+#bgImg {
+    min-height: 100%;
+    min-width: 100%;
+    position: fixed;
+    z-index: -10;
+}
+
+#displayNone {
+    display: none;
+    pointer-events: none;
+}
+
+.img-Transition {
+    animation: fade-in 1s ease-in-out forwards;
+    transition: all 1s ease-out;
+}
+
+
+
+
+
+
+#headerText {
+    position: relative;
+    top: 5px;
+    color: white;
+    line-height: 0.9;
+}
+
+    #headerText:hover {
+        color: green;
+        text-decoration: wavy;
+        transition: all 1s ease-in-out;
+        background: #dd3e54; /* fallback for old browsers */
+        background: -webkit-linear-gradient(to right, #6be585, #dd3e54); /* Chrome 10-25, Safari 5.1-6 */
+        background: linear-gradient(to right, #6be585, #dd3e54); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+        border-radius: 25px;
+    }
+
+@font-face {
+    font-family: 'PIZZARIA';
+    src: url('file:///C:\Users\heads\source\repos\PracticeCRUD\PracticeCRUD\wwwroot\css\open-iconic\font\fonts\PIZZARIA.ttf') format('truetype');
+}
+
+
+
+#headerContainer {
+    background-color: #333;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    overflow: hidden;
+}
+
+    #headerContainer a {
+        float: left;
+        display: block;
+        color: #f2f2f2;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        font-size: 2em;
+        text-overflow: clip;
+        overflow-wrap: break-word;
+    }
+
+
+#header {
+    border-radius: 0px;
+    border-bottom-style: solid;
+    border-bottom-color: green;
+    position: fixed;
+}
+
+#headerIcon {
+    margin: 0px 5px 5px 5px;
+}
+
+#headerTextContact {
+    position: relative;
+    top: 10px;
+    margin-left: 15px;
+}
+
+
+#headerIconText {
+    position: relative;
+    left: 10px;
+    color: white;
+}
+
+
+    #headerIconText:hover {
+        color: firebrick;
+    }
+
+.flex-container {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    align-content: flex-end;
+    align-items: flex-end;
+    text-overflow: clip;
+}
+
+     

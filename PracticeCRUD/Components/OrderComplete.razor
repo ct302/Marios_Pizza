@@ -1,0 +1,82 @@
+﻿@page "/ordercomplete"
+@page "/ordercomplete/{OrderID}"
+@inject NavigationManager navManager
+
+
+
+
+
+<section id="orderCompleteDiv" class="p-sm-4 m-4" style="position: relative; top: 15vh; bottom: 30vh;">
+    <div class="container-fluid d-flex justify-content-center text-center" style="position:relative; max-height:70vh">
+        <div class="col-sm-8">
+            <h1>Order Complete! Your delivery will be arriving shortly! </h1>
+            <p style="font-family: 'Californian FB'; color:snow;">Your receipt has been E-Mailed to you! </p>
+            <p>Your Order ID is @formattedOrderID</p>
+
+            <div class="m-3">
+                <button class="btn btn-success" @onclick="@( () => navManager.NavigateTo("/", true) )">Go Home</button>
+
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+ 
+       
+
+
+
+
+<style>
+
+    h1 {
+
+        font-family:'Bernard MT';
+        color: snow;
+
+    }
+
+    p {
+
+        font-family: Cooper;
+        color:white;
+        font-size:1em;
+    }
+    #orderCompleteDiv {
+        background: rgb(254,254,254);
+        background: linear-gradient(179deg, rgba(254,254,254,1) 0%, rgba(0,140,56,1) 2%, rgba(141,0,0,0.9434691011235955) 55%, rgba(215,227,220,1) 93%);
+    }
+</style>
+
+
+@code {
+
+    [Parameter]
+    public string OrderID { get; set; }
+
+    string formattedOrderID;
+
+
+    protected override void OnInitialized()
+    {
+
+
+        if (OrderID == null)
+        {
+            navManager.NavigateTo("/", true);
+        }
+
+
+        formattedOrderID = "";
+        OrderID = OrderID;
+        formattedOrderID = OrderID.ToString().Remove(5).Replace("-", "").ToString();
+
+
+
+    }
+
+
+
+}

@@ -1,0 +1,103 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<div class="row" style="position:relative; top:10vh;">
+    <div class="col-12">
+        <section>
+            <form id="account" method="post">
+                <h4 class="text-center" style="border:3px solid black; border-radius: 50px; background-color:snow; color:seagreen; font-family: 'Comic Sans MS';">Welcome Back!</h4>
+                <hr />
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Input.Email"></label>
+                    <input asp-for="Input.Email" class="form-control" />
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.Password"></label>
+                    <input asp-for="Input.Password" class="form-control" />
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <div class="checkbox">
+                        <label asp-for="Input.RememberMe">
+                            <input asp-for="Input.RememberMe" />
+                            @Html.DisplayNameFor(m => m.Input.RememberMe)
+                        </label>
+                    </div>
+                </div>
+
+
+                <div style="position:relative; margin-left:auto; margin-right: auto;">
+                    <div class="d-flex justify-content-center m-5">
+                        <div class="m-5">
+
+                        <button  type="submit" class="btn btn-success">Log in</button>
+                        <a  href ="/" class="btn btn-danger">Go Back</a>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+                    <p>
+                        <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
+                    </p>
+                    <p>
+                        <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
+                    </p>
+                
+                </div>
+            </form>
+        </section>
+    </div>
+</div>
+
+
+
+
+<style>
+
+
+    btn{
+
+        font-family:Ebrima;
+    }
+
+    a {
+
+        color: snow;
+        font-family:'Bodoni MT';
+
+    }
+
+    form-group{
+
+        color: snow;
+        font-family: Calibri;
+    }
+
+    label {
+        color: snow;
+        font-family: Rage;
+        font-size: 3em;
+        background-color: black;
+        clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%);
+        padding: 15px;
+        border: 1px solid seagreen;
+        border-radius: 50px;
+    }
+    
+</style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

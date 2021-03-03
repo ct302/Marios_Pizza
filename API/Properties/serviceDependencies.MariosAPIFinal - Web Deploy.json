@@ -1,0 +1,20 @@
+{
+  "dependencies": {
+    "mssql2": {
+      "type": "mssql",
+      "connectionId": "AppDbIdentityContextConnection",
+      "suggestion": "true",
+      "ignored": "true"
+    },
+    "mssql1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/mariosserver/databases/MariosDBFinal",
+      "type": "mssql.azure",
+      "connectionId": "AzureDB",
+      "secretStore": "AzureAppSettings"
+    },
+    "apis1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.ApiManagement/service/MariosAPI/apis/mariosapi",
+      "type": "apis.azure"
+    }
+  }
+}

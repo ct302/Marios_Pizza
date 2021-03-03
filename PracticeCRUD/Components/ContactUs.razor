@@ -1,0 +1,111 @@
+﻿@page "/contactus"
+@inject IConfiguration Configuration
+@using System.Net.Mail;
+@using System.Net;
+@using Microsoft.Extensions.Configuration;
+@using System.ComponentModel.DataAnnotations;
+
+
+<img id="pizzaDisplayBGImg" src="/images/Brick.jpg" />
+
+
+<section class="py-5 mb-5" id="contactForm" style="overflow: hidden; position: relative; top: 35px;">
+   
+    <h2 id="movedDownText" class="mb-5 text-center" style="position: relative; margin-left:auto; margin-right: auto; text-align:center; top: 30px; max-width:70vw;">Thanks for reaching out to us.
+    <span id="movedDownText" style="font-family:'Palatino Linotype';">What's on your mind?</span></h2>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 d-flex justify-content-center">
+                <form id="contactForm" style="width: 500px; ">
+                    <div class="form-group bmd-form-group">
+                        <label class="bmd-label-floating" for="input-contacts-02">Your Email Address</label>
+                        <input @bind="emailAddress" @bind:event="oninput" type ="email" class="form-control mb-3" id="input-contacts-02" required  pattern="[a-z0-9._%+-]+@@[a-z0-9.-]+\.[a-z]{2,4}$">
+                    </div>
+                    <div class="form-group bmd-form-group">
+                        <label class="bmd-label-floating" for="textarea-contacts-02">Write something...</label>
+                        <textarea @bind="message" @bind:event="oninput" class="form-control mb-3" id="textarea-contacts-02" rows="5" required placeholder="Hello!"></textarea>
+                    </div>
+                    @sentMessage
+                    <button @onclick="emailMe" class="btn btn-primary btn-raised btn-block" type="submit">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<style>
+
+    .bmd-label-floating{
+        color: whitesmoke;
+        font-family: 'Baskerville Old Face';
+        font-size: 1.5em;
+    }
+    .flex-container {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-content: center;
+        align-items: baseline;
+    }
+
+    #pizzaDisplayBGImg {
+        height: 100%;
+        width: 100%;
+        z-index: -100;
+        background-size: cover;
+        background-repeat: no-repeat;
+        position: fixed;
+        animation: fadeIn 0.2s ease-in-out forwards;
+    }
+
+
+    #movedDownText{
+        background-color: seagreen;
+        
+    }
+
+</style>
+
+
+@code {
+
+    string message = "";
+
+
+    [Required]
+    [DataType(DataType.EmailAddress)]
+    public string emailAddress { get; set; }
+
+    string sentMessage = "";
+
+    void emailMe()
+    {
+        string email = Configuration["Email"];
+        string password = Configuration["Password"];
+        MailMessage mail = new MailMessage();
+        mail.From = new MailAddress(emailAddress);
+        mail.To.Add("headshotsvol7@gmail.com");
+        mail.Subject = "Test";
+        mail.Body = $"<p> From: {emailAddress} Message: {message}</p>";
+        mail.IsBodyHtml = true;
+        using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
+        {
+            smtp.Credentials = new NetworkCredential(email, password);
+            smtp.EnableSsl = true;
+            smtp.Send(mail);
+        }
+
+        sentMessage = "Email Sent!";
+        StateHasChanged();
+
+
+
+
+    }
+
+
+}

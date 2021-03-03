@@ -1,0 +1,71 @@
+﻿@using Areas
+@inject PizzaOrder grabCurrentUserIDService
+@inject AppDbIdentityContext db
+@inject AuthenticationStateProvider authManager
+@using PracticeCRUD.Data
+
+
+
+
+<AuthorizeView>
+    <Authorized>
+        <div style="text-align: center;">
+            
+           
+                
+        </div>
+    </Authorized>
+    <NotAuthorized>
+   
+    </NotAuthorized>
+</AuthorizeView>
+
+<style>
+    #navLink {
+        color: seagreen;
+        font-weight: bolder;
+        font-family: 'Tempus Sans ITC';
+    }
+ 
+</style>
+
+
+@code {
+
+    string myUser;
+    string myUserID;
+
+    protected override void OnInitialized()
+    {
+
+        myUser = "";
+        myUserID = "";
+        var x  = authManager.GetAuthenticationStateAsync();
+        myUser = x.Result.User.Identity.Name;
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(1000);
+        foreach (var item in db.Users.Where(p => p.Email == myUser))
+        {
+            myUserID = item.Id;
+            grabCurrentUserIDService.CurrentUserID = myUserID;
+        }
+
+
+        @if (myUserID != null)
+        {
+            grabCurrentUserIDService.isUserRegistered = true;
+        }
+
+    }
+
+
+
+
+}
+
+
+

@@ -1,0 +1,188 @@
+﻿@page "/wingscomponent"
+@inject NavigationManager navManager
+
+
+<img id="pizzaDisplayBGImg" src="/images/Brick.jpg" />
+<section class="section-2" style="margin: 30px;">
+
+
+                <div class="d-flex justify-content-center">
+
+                    <button id="myButton" @onclick="@( () => navManager.NavigateTo("/") )" class="btn btn-success">Go Back</button>
+
+                </div>
+
+    <div id="pizzaContainer" class="container" style="text-overflow: clip;">
+
+        <div class="row text-center" style="position: relative; top: 100px;">
+
+
+
+            <div class="col-md-6 my-2 p-2 p-md-5 rounded-bottom" style="border: 2px solid black; border-radius: 25px; background-image:url('images/BlazinBG.jpg'); background-size: cover;">
+                @*Blazin Buffalo Image*@
+                <div class="pattern">
+
+                    <img @onclick="@( () => navManager.NavigateTo("/blazinbuffalowings"))" class="w-75 mb-10 rounded position-relative pizzaImgs" src="/images/PngItem_1210582.png" alt="">
+                </div>
+
+
+
+
+                <h2 class="mb-4 titleText1">Blazin' Buffalo</h2>
+                <p id="pizzaDescripText" class="pt-2 pb-3">
+                    Mario's Signature Blazin' Buffalo wings will leave your mouth watering!
+                </p>
+                <a class="mb-4" href="#"><i class="fe fe-arrow-right ml-2"></i></a>
+            </div>
+
+
+            <div class="col-md-6 my-2 p-2 p-md-5" style="border: 2px solid black; border-radius: 25px; position: relative;  background-image: url('images/HoneyBBQBG.jpg'); background-size: cover;">
+                <div class="pattern">
+
+                    <img @onclick="@( () => navManager.NavigateTo("/hickorybbqwings"))" class="w-75 mb-10 rounded position-relative pizzaImgs" src="/images/chickwings.png" alt="">
+                </div>
+
+                <h2 class="mb-4 titleText2">
+                    Hickory Honey BBQ 
+                </h2>
+
+                <p id="pizzaDescripText" class="pt-2 pb-3" style="position: relative;">
+                 Try Our Hickory and Honey Smoked BBQ Wings made fresh to order!
+                </p>
+                <a class="mb-4" href="#"><i class="fe fe-arrow-right ml-2"></i></a>
+            </div>
+
+
+
+        
+
+
+        </div>
+    </div>
+</section>
+
+
+
+
+<style>
+
+    .titleText1{
+
+        font-family:'Agency FB'
+
+    }
+    .titleText2 {
+        font-family: 'Agency FB'
+
+
+    }
+
+
+    @@keyframes pulse {
+        0% {
+            -webkit-transform: scale3d(1, 1, 1);
+            transform: scale3d(1, 1, 1);
+        }
+
+        50% {
+            -webkit-transform: scale3d(1.05, 1.05, 1.05);
+            transform: scale3d(1.05, 1.05, 1.05);
+        }
+
+        100% {
+            -webkit-transform: scale3d(1, 1, 1);
+            transform: scale3d(1, 1, 1);
+        }
+    }
+
+    @@keyframes fadeIn {
+        0% {
+            opacity: 0;
+        }
+
+        100% {
+            opacity: 1;
+        }
+    }
+
+    #pizzaContainer {
+        animation: fadeIn 0.4s ease-in-out forwards;
+        position: relative;
+        margin-bottom: 190px;
+    }
+
+    #pizzaDescripText {
+        background-color: red;
+    }
+
+    .pizzaImgs {
+        max-width: initial;
+        max-height: 180px;
+        transition: all 1.30s;
+    }
+
+        .pizzaImgs:hover {
+            transition: all 1.30s ease-in-out;
+            filter: drop-shadow(10px 10px 5px green);
+            -webkit-filter: drop-shadow(10px 10px 5px green);
+            -moz-filter: drop-shadow(10px 10px 5px #ff0000);
+            animation: pulse 2s ease-in-out backwards;
+        }
+
+    p {
+        color: white;
+        font-family: Rockwell;
+        font-size: 1.5em;
+    }
+
+    h2 {
+        color: white;
+        font-family: 'pizzaria';
+        border-bottom: 3px solid green;
+        font-size: 3em;
+    }
+
+
+    #pizzaDisplayBGImg {
+        height: 100%;
+        width: 100%;
+        z-index: -4;
+        background-size: cover;
+        background-repeat: no-repeat;
+        position: fixed;
+        animation: fadeIn 0.2s ease-in-out forwards;
+    }
+
+    #pizzaDisplayMenu {
+        text-overflow: clip;
+        overflow-wrap: break-word;
+        vertical-align: text-top;
+    }
+
+    #pizzaDisplayText {
+        font-family: 'pizzaria';
+        color: firebrick;
+        font-size: 2em;
+        transition: height 1s ease-in-out;
+        animation: pulse 1.5s ease-out forwards;
+        vertical-align: text-top;
+        text-align: center;
+        position: relative;
+    }
+
+    #captionImage {
+        max-height: 100%;
+        position: absolute;
+        align-content: center;
+        right: 800px;
+        top: 0;
+        max-width: 50%;
+    }
+
+    #pizzaPNG {
+        border-radius: 15px 50px 30px 5px;
+    }
+</style>
+
+
+

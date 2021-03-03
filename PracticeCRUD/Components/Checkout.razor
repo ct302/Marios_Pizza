@@ -1,0 +1,629 @@
+﻿@page "/checkout"
+@inherits Data.CardInfoCodeBehind
+@inject Services.PizzaService pizzaService
+@inject Services.WingsService wingService
+@inject AppDbIdentityContext db
+@inject NavigationManager navManager
+@inject Services.PizzaOrder grabCurrentUserIDService
+@inject DrinksService drinkService
+@inject IConfiguration Configuration
+@using System.Net.Mail;
+@using System.Net;
+@using Microsoft.Extensions.Configuration;
+@using Stripe
+@using Stripe.Checkout
+@using Data
+@using Code_Behind
+@using PracticeCRUD.DbData;
+@using CCard_Stripe.Data;
+
+
+    <AuthorizeView Roles="Admin, Normal" Context="Auth">
+
+
+
+        <Authorized>
+
+            <EditForm Model="@checkOut" OnValidSubmit="@MyCall">
+
+                @*Processing Payment Div*@
+                <div class="container" style="background-color: seagreen; display:@(orderWasProcessed ? "" : "none") ">
+                    <div class="container d-flex justify-content-center spinner-border" style="position: relative; top: 200px; background-color:red;">
+                        <div class="container" style="height:100%;  border-radius: 25px;
+  border: 2px solid #73AD21; width:100%; position:relative; z-index:-150; background-color:red;">
+
+
+                        </div>
+                    </div>
+
+                    <h1 id="processingText" class="text-body text-center text-success" style="position:relative; top:200px; font-family:'Agency FB'">Processing payment</h1>
+
+
+
+                </div>
+
+
+                <div class="container-fluid py-5" style="position: relative; top: 50px; background-color: wheat; display:@(orderWasProcessed ? "none" : "") ">
+                    <div class="pb-5 text-center">
+                        <h1 style="font-family:'Courier New'; border-bottom: 1px black dotted;">Total: $@pizzaService.TotalOrderPrice.ToString("#.###") </h1>
+
+                        <img class="mx-auto mb-4" src="/images/LogoPizza.png" alt="" width="120" height="120">
+                        <h2 style="font-family: 'Berlin Sans FB'; color: seagreen; font-size: 3em; border-bottom: 3px ridge red">Checkout </h2>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 order-md-2 mb-4">
+
+                            <h4 class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="text-muted">Your cart</span><span class="badge badge-secondary badge-pill">
+                                    @pizzaService.ItemCount
+                                    <i class="fas fa-shopping-cart"></i>
+                                </span>
+                            </h4>
+
+                            @*Item List*@
+                            <ul class="list-group mb-3">
+
+
+                                @foreach (var item in pizzaService.TotalOrderItems)
+                                {
+                                    <li class="list-group-item d-flex justify-content-between lh-condensed">
+                                        <div style="text-overflow:clip;">
+                                            <h6 class="my-0">
+
+                                                @item.PizzaSize
+                                                @item.PizzaName
+                                                @item.WingsCount
+                                                @item.WingsName
+                                                @item.DrinkSize
+                                                @item.DrinkName
+                                                @item.Toppings
+                                                &nbsp;
+                                                @foreach (var t in item.ToppingsList)
+                                                {
+
+                                                    <span class="text-muted text-monospace" id="toppingText">
+                                                        w/ @t
+                                                    </span>
+                                                }
+                                            </h6>
+                                            <small class="text-muted">
+                                                $@item.FinalItemPrice.ToString("#.##")
+
+                                            </small>
+                                        </div>
+
+
+                                    </li>
+                                }
+
+
+
+                                <li class="list-group-item d-flex justify-content-between lh-condensed">
+                                    <div class="text-success">
+                                        <h6 class="my-0">Promo code</h6>
+                                        <small>EXAMPLECODE</small>
+                                    </div>
+                                    <span class="text-success">-$5</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between">
+                                    <span>Total $@pizzaService.TotalOrderPrice.ToString("#.##")</span><strong>$@pizzaService.TotalOrderPrice.ToString("#.##")</strong>
+
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-8 order-md-1">
+                            <hr class="mb-4">
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" id="input10-ecommerce-03" type="checkbox">
+                                <label class="custom-control-label" for="input10-ecommerce-03">Shipping address is the same as my billing address</label>
+                            </div>
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" id="input11-ecommerce-03" type="checkbox">
+                                <label class="custom-control-label" for="input11-ecommerce-03">Save this information for next time</label>
+                            </div>
+
+                            <hr class="mb-4">
+                            <h4 class="mb-3">Payment</h4>
+                            <div class="d-block my-3">
+                                <div class="custom-control custom-radio">
+                                    <input class="custom-control-input" id="input12-ecommerce-03" name="paymentMethod" type="radio" checked="" required="">
+                                    <label class="custom-control-label" for="input12-ecommerce-03">Credit card</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input class="custom-control-input" id="input13-ecommerce-03" name="paymentMethod" type="radio" required="">
+                                    <label class="custom-control-label" for="input13-ecommerce-03">Debit card</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input class="custom-control-input" id="input14-ecommerce-03" name="paymentMethod" type="radio" required="">
+                                    <label class="custom-control-label" for="input14-ecommerce-03">Paypal</label>
+                                </div>
+                            </div>
+
+
+
+
+                        </div>
+
+                    </div>
+
+                    @*CCARD FORM*@
+                    <!-- 2 column grid layout with text inputs for the first and last names -->
+                    <div class="row mb-4 ">
+
+                        <div class="col">
+                            <div class="form-outline">
+                                <label class="form-label" for="form6Example2">Name</label>
+                                <input placeholder="Name as shown on card" type="text" id="form6Example2" class="form-control" @bind-value="@checkOut.Name" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Text input -->
+                    <div class="form-outline mb-4">
+                        <label class="form-label" for="form6Example3">Email</label>
+                        <input placeholder="abc123@gmail.com" type="text" id="form6Example3" class="form-control" @bind-value="@checkOut.EmailAddress" />
+                    </div>
+
+                    <div class="form-outline mb-4">
+                        <label class="form-label" for="form6Example3">City</label>
+                        <input placeholder="ex. New York City.." type="text" id="form6Example3" class="form-control" @bind-value="@checkOut.City" />
+                    </div>
+
+
+                    <div class="form-outline mb-4">
+                        <label class="form-label" for="form6Example3">State</label>
+                        <input placeholder="ex. California..." type="text" id="form6Example3" class="form-control" @bind-value="@checkOut.State" />
+                    </div>
+
+
+                    <div class="form-outline mb-4">
+                        <label class="form-label" for="form6Example3">Address Line 1.</label>
+                        <input placeholder="123 Jump Street..." type="text" id="form6Example3" class="form-control" @bind-value="@checkOut.AddressLine1" />
+                    </div>
+
+
+                    <div class="form-outline mb-4">
+                        <label class="form-label" for="form6Example3">Address Line 2.</label>
+                        <input placeholder="Extra line if needed.." type="text" id="form6Example3" class="form-control" @bind-value="@checkOut.AddressLine2" />
+                    </div>
+
+
+                    <div class="form-outline mb-4">
+                        <label class="form-label" for="form6Example3">Zip Code</label>
+                        <input placeholder="92326" type="text" id="form6Example3" class="form-control" @bind-value="@checkOut.Zipcode" />
+                    </div>
+
+
+                    <div class="form-outline mb-4">
+                        <label class="form-label" for="form6Example3">Phone Number</label>
+                        <input placeholder="237-373-4738" type="text" id="form6Example3" class="form-control" @bind-value="@checkOut.PhoneNumber" />
+                    </div>
+
+
+                    <!-- Text input -->
+                    <div class="form-outline mb-4">
+                        <label class="form-label" for="form6Example4">Credit Card Number</label>
+                        <input placeholder=" ex. 1239383746323234" type="text" id="form6Example4" class="form-control" @bind-value="@checkOut.CreditCard" />
+                    </div>
+
+                    <!-- Email input -->
+                    <div class="form-outline mb-4">
+                        <label class="form-label" for="form6Example5">Expiration Month</label>
+                        <input placeholder="Exp. Month" type="text" id="form6Example5" class="form-control" @bind-value="@checkOut.ExpiryMonth" />
+                    </div>
+
+                    <!-- Number input -->
+                    <div class="form-outline mb-4">
+                        <label class="form-label" for="form6Example6">Expiration Year</label>
+                        <input placeholder="Exp. Year" type="text" id="form6Example6" class="form-control" @bind-value="@checkOut.ExpiryYear" />
+                    </div>
+
+                    <!-- Number input -->
+                    <div class="form-outline mb-4">
+                        <label class="form-label" for="form6Example6">CVC</label>
+                        <input placeholder="ex. 111" type="text" id="form6Example6" class="form-control" @bind-value="@checkOut.CVC" />
+                    </div>
+
+
+                    <!-- Submit button -->
+                    <button type="submit" class="btn btn-primary btn-block mb-4">Place order</button>
+
+
+
+
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+
+                </div>
+
+
+
+
+
+
+
+
+
+            </EditForm>
+
+
+        </Authorized>
+
+
+        <NotAuthorized>
+
+
+
+            <section id="notRegisteredSection" class="py-5" style="position:relative;  background-image:url(images/Brick.jpg);">
+                <div id="registerDiv" class="container text-center rounded rounded-bottom" style="position:relative; margin-top: 100px; margin-bottom: 100px; max-width: 70vw;">
+                    <div class="row rounded-0" style="position:relative; top:14vh; margin-bottom:15vh;">
+                        <div class="col-md-6 mx-auto p-4 mt-3" style="position:relative; margin:10vh">
+                            <a class="btn btn-primary  mt-5" href="#" style="position:relative; margin:30px; background-color: black">Back to homepage</a>
+                            <h1 style="font-size:2em; font-family:'Berlin Sans FB'; border: black 2px double; color:seagreen;">Please Login or Regsiter to Order!</h1>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+
+
+        </NotAuthorized>
+
+    </AuthorizeView>
+
+
+
+
+
+
+
+
+
+<style>
+
+    #notRegisteredSection {
+        min-height: 100vh;
+        min-width: 100vw;
+    }
+
+    #registerDiv {
+        background: rgb(254,254,254);
+        background: linear-gradient(179deg, rgba(254,254,254,1) 0%, rgba(0,140,56,1) 49%, rgba(141,0,0,0.9434691011235955) 55%, rgba(215,227,220,1) 93%);
+        min-height: 80vh;
+    }
+
+    @@-webkit-keyframes tracking-in-expand {
+        0% {
+            letter-spacing: -0.5em;
+            opacity: 0;
+        }
+
+        40% {
+            opacity: 0.6;
+        }
+
+        100% {
+            opacity: 1;
+        }
+    }
+
+
+    #processingText {
+        animation: tracking-in-expand 1s ease-in-out forwards;
+    }
+
+    @@keyframes tracking-in-expand {
+        0% {
+            letter-spacing: -0.5em;
+            opacity: 0;
+        }
+
+        40% {
+            opacity: 0.6;
+        }
+
+        100% {
+            opacity: 1;
+        }
+    }
+
+
+    .form-label {
+        font-family: 'Agency FB';
+        font-size: 2em;
+    }
+
+    .flex-container {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: center;
+        align-content: stretch;
+        align-items: flex-start;
+        position: relative;
+        top: 100px;
+    }
+
+
+
+
+</style>
+
+
+@code {
+
+
+    string cssLoadingSpinnerString => orderWasProcessed ? "" : "spinner-border";
+    bool orderWasProcessed = false;
+    string displayCharge;
+    long formattedTotal;
+    public CheckOutModel checkOut = new CheckOutModel();
+    public DbData.MyCustomer CurrentCustomer = new DbData.MyCustomer();
+    public CustomerOrder customerOrder = new CustomerOrder();
+    public DrinksService drinksService = new DrinksService();
+    public long amountToCharge = 0;
+    public long amountToCharge2 = 0;
+    public string[] paymentDetails = new string[] { };
+
+
+
+
+    string message = "";
+
+
+    public string emailAddress { get; set; }
+
+
+    async void emailReceipt()
+    {
+        string email = Configuration["Email"];
+        string password = Configuration["Password"];
+        MailMessage mail = new MailMessage();
+        mail.From = new MailAddress("headshotsvol7@gmail.com");
+        mail.To.Add(checkOut.EmailAddress);
+        mail.Subject = $"Your receipt for Order {customerOrder.OrderID}";
+
+
+        var customBody = string.Join(" ", pizzaService.TotalOrderItems);
+
+
+        var formattedEmailTotal = pizzaService.TotalOrderPrice.ToString("#.###");
+        string htmlString = $@"<html>
+                      <body>
+                      <p>Dear {CurrentCustomer.Name}, your order {customerOrder.OrderID} has been proccessed and is out for delivery!</p>
+                      <p>Order Total: ${formattedEmailTotal}</p>
+                      <p> Time ordered: {customerOrder.OrderTime} </p>  
+                      <p> Items Ordered {customerOrder.PizzaSize} </p>
+                      <p>{customerOrder.PizzaName}</p>
+                      <p>{customerOrder.WingsCount}</p>
+                      <p>{customerOrder.WingsName}</p>
+                      <p>{customerOrder.DrinkName} </p>
+                        
+                      </body>
+                      </html>
+                     ";
+
+
+
+
+
+        mail.Body = htmlString;
+        mail.IsBodyHtml = true;
+        using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
+        {
+            smtp.Credentials = new NetworkCredential(email, password);
+            smtp.EnableSsl = true;
+            smtp.Send(mail);
+        }
+        pizzaService.TotalOrderPrice = 0;
+
+        await InvokeAsync(StateHasChanged);
+
+
+
+    }
+
+
+
+
+
+    protected override void OnInitialized()
+    {
+
+
+        displayCharge = pizzaService.TotalOrderPrice.ToString().Replace(".", "");
+
+        formattedTotal = long.Parse(displayCharge);
+
+        amountToCharge = formattedTotal;
+
+
+    }
+
+
+
+
+
+    public async Task MyCall()
+    {
+        orderWasProcessed = true;
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(1000);
+
+
+        StripeConfiguration.ApiKey = "sk_test_JeiTNW3ZLfMPN8jnlkk5U5Qa";
+
+        var optionsCustomer = new CustomerCreateOptions
+        {
+            Email = checkOut.EmailAddress,
+            Phone = checkOut.PhoneNumber
+
+
+        };
+
+        var serviceCustomer = new CustomerService();
+        serviceCustomer.Create(optionsCustomer);
+        CardCreateNestedOptions token = new CardCreateNestedOptions()
+        {
+            Number = checkOut.CreditCard,
+            ExpMonth = int.Parse(checkOut.ExpiryMonth),
+            ExpYear = int.Parse(checkOut.ExpiryYear),
+            Cvc = checkOut.CVC,
+            Name = checkOut.Name,
+            AddressLine1 = checkOut.AddressLine1,
+            AddressLine2 = checkOut.AddressLine2,
+            AddressCity = checkOut.City,
+            AddressZip = checkOut.Zipcode
+
+
+
+
+        };
+
+        if (amountToCharge.ToString().Length > pizzaService.TotalOrderPrice.ToString("#.###").Length)
+        {
+
+            amountToCharge = long.Parse(pizzaService.TotalOrderPrice.ToString("#.##"));
+        }
+
+
+        var optionsCharge = new ChargeCreateOptions
+        {
+
+
+
+            Amount = amountToCharge,
+            Currency = "usd",
+            Source = token,
+            ReceiptEmail = checkOut.EmailAddress
+
+
+
+
+
+        };
+
+        var serviceCharge = new ChargeService();
+        serviceCharge.Create(optionsCharge);
+
+        var optionsToken = new TokenCreateOptions
+        {
+            Card = new TokenCardOptions
+            {
+                Number = checkOut.CreditCard,
+                ExpMonth = int.Parse(checkOut.ExpiryMonth),
+                ExpYear = int.Parse(checkOut.ExpiryYear),
+                Cvc = checkOut.CVC,
+            },
+        };
+        var serviceToken = new TokenService();
+        serviceToken.Create(optionsToken);
+        checkOut.CreditCard = null;
+        checkOut.CVC = null;
+        checkOut.ExpiryMonth = null;
+        checkOut.ExpiryYear = null;
+
+        String seperator = " ";
+
+
+        customerOrder.DrinkName = drinkService.DrinkName;
+        customerOrder.DrinkSize = drinkService.DrinkSize;
+
+
+
+        //Adding Customer to DB
+        CurrentCustomer.LinkToUserTableID = grabCurrentUserIDService.CurrentUserID;
+
+        CurrentCustomer.CustomerID = Guid.NewGuid().ToString();
+        CurrentCustomer.Name = checkOut.Name;
+        CurrentCustomer.EmailAddress = checkOut.EmailAddress;
+        CurrentCustomer.City = checkOut.City;
+        CurrentCustomer.State = checkOut.State;
+        CurrentCustomer.PhoneNumber = checkOut.PhoneNumber;
+        CurrentCustomer.State = checkOut.State;
+        CurrentCustomer.Name = checkOut.Name;
+        CurrentCustomer.PhoneNumber = checkOut.PhoneNumber;
+
+
+        //Adding Order to DB
+        customerOrder.OrderID = Guid.NewGuid().ToString();
+        customerOrder.UserID = grabCurrentUserIDService.CurrentUserID;
+
+        customerOrder.WingsName = pizzaService.TotalOrderItems.First().WingsName;
+        customerOrder.WingsCount = pizzaService.TotalOrderItems.First().WingsCount;
+        customerOrder.OrderTotal = pizzaService.TotalOrderPrice;
+        customerOrder.ToppingsList = pizzaService.ExtraToppings.FindAll(p => p.Length > 1);
+        customerOrder.PizzaName = pizzaService.Pizza_Name;
+        customerOrder.PizzaSize = pizzaService.Pizza_Size;
+        customerOrder.OrderTotal = pizzaService.TotalOrderPrice;
+        customerOrder.Toppings = "";
+        customerOrder.OrderTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("West Pacific Standard Time")) + TimeSpan.FromHours(6);
+
+        //Mapping Toppings to Customer Order
+        @foreach (var item in pizzaService.TotalOrderItems)
+        {
+
+
+            @foreach (var x in item.ToppingsList)
+            {
+                customerOrder.ToppingsList.Add(x);
+
+            }
+        }
+
+
+
+
+        customerOrder.Toppings = String.Join(seperator, customerOrder.ToppingsList);
+
+
+        db.Customers.Add(CurrentCustomer);
+        db.CustomerOrder.Add(customerOrder);
+        db.SaveChanges();
+
+        pizzaService.TotalOrderItems.Clear();
+        //pizzaService.TotalOrderPrice = 0;
+        pizzaService.ItemCount = 0;
+        emailReceipt();
+        await InvokeAsync(StateHasChanged);
+        navManager.NavigateTo($"/ordercomplete/{customerOrder.OrderID}", true);
+
+
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}

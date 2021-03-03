@@ -1,0 +1,145 @@
+﻿@page "/viewcustomers"
+@using System.Net.Http.Json
+@using DbData;
+@using Data;
+@inject HttpClient client
+@inject NavigationManager navManager
+
+
+<AuthorizeView Roles="Admin">
+
+    <Authorized>
+
+
+     
+
+  
+
+
+            @if (customers == null)
+            {
+                <h1 class="text-center display-1 border-bottom m-sm-2 spinner-border" style="position: relative; top: 200px;"></h1>
+
+            }
+            else
+            {
+                <h1 class="text-center display-1 border-bottom m-sm-2" style="position: relative; top: 200px;">Customers</h1>
+                <button style="height: 100px; width: 100px; left: 50%; right: 50%; top: 200px; position:relative;" class="btn btn-success " @onclick ="@( () => navManager.NavigateTo("/viewcustomerorders"))">View Customer Orders</button>
+                <div class="d-flex justify-content-center" style="position: relative; top: 300px; margin-bottom: 500px;">
+
+
+
+
+
+                    <table class="table-bordered table-nonfluid" style="margin-bottom: 100px; margin-left:100px; margin-right: 100px; width:100px; position:relative;">
+                        <thead>
+
+                            <tr>
+                                <th scope="row"> User ID</th>
+                                <th scope="row"> Name</th>
+                                <th scope="row"> Email</th>
+                                <th scope="row"> City</th>
+                                <th scope="row"> State</th>
+                                <th scope="row"> Phone Number</th>
+                                <th scope="row"> Time Registered</th>
+                            </tr>
+                        </thead>
+
+                        @if (customers == null)
+                        {
+                            <tr class="spinner-grow">
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var item in customers)
+                            {
+                                <tr>
+                                    <td>@item.LinkToUserTableID</td>
+                                    <td>@item.Name</td>
+                                    <td>@item.EmailAddress</td>
+                                    <td>@item.City</td>
+                                    <td>@item.State</td>
+                                    <td>@item.PhoneNumber</td>
+                                    <td>@item.TimeRegistered</td>
+                                </tr>
+
+
+
+
+                            }
+                        }
+
+
+                    </table>
+
+                </div>
+
+            }
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+    </Authorized>
+
+
+
+
+
+    <NotAuthorized>
+
+        <body style="background-color: pink">
+            <h1 class="text-center" style="position:relative; top: 50%;">Not Authorized</h1>
+        </body>
+
+
+    </NotAuthorized>
+</AuthorizeView>
+
+
+
+
+
+<style>
+
+
+    .table-nonfluid {
+        width: auto !important;
+    }
+</style>
+
+
+
+
+@code {
+
+
+    List<MyCustomer> customers;
+    List<CustomerOrder> orders;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        customers = new List<MyCustomer>();
+        orders = new List<CustomerOrder>();
+        customers = await client.GetFromJsonAsync<List<MyCustomer>>($"https://finaltriviamaniaapi.azure-api.net/api/Customer");
+        orders = await client.GetFromJsonAsync<List<CustomerOrder>>($"https://finaltriviamaniaapi.azure-api.net/api/CustomerOrder");
+
+
+    }
+
+
+
+}

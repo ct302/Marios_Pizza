@@ -1,0 +1,411 @@
+﻿@page "/blazinbuffalowings"
+@inject Services.WingsService wingService
+@inject Services.PizzaService pizzaService
+@using Services
+@using Data
+@using Code_Behind
+@inject NavigationManager navManager
+
+<img id="pizzaDisplayBGImg" src="/images/Brick.jpg" />
+
+
+<section class="py-5">
+    <div class="container text-center" style="position:relative; top: 10px; margin-bottom: 80px;">
+
+            <h2 id="spanTitleText" style="color: ghostwhite; font-size: 3em; z-index: 50;">Mario's Blazing Buffalo Wings</h2>
+        @* <img id="italianMamaPic" class="img-fluid my-4" src="/images/UHD Pizza.jpg" alt="">*@
+
+
+
+        <BlazorStrap.BSCarousel NumberOfItems="activePicture.Count()">
+
+            <div class="carousel-inner" id="picCarousel">
+                @for (int i = 0; i < activePicture.Count(); i++)
+                {
+                    <BlazorStrap.BSCarouselItem Src="@activePicture[i]" style="width: 100%; height: 30vh; object-fit: fill; position: relative; margin-left: auto; margin-right: auto;" />
+                }
+                <BlazorStrap.BSCarouselControl CarouselDirection="BlazorStrap.CarouselDirection.Next" NumberOfItems="activePicture.Count()" />
+                <BlazorStrap.BSCarouselControl CarouselDirection="BlazorStrap.CarouselDirection.Previous" NumberOfItems="activePicture.Count()" />
+            </div>
+
+        </BlazorStrap.BSCarousel>
+
+
+        <p id="pizzaDetails" style="border-top: 2px white solid;">
+            Marios’s Signature Pepperoni pizza takes on a new shape. A 12 x 3 pizza crust topped with a simple red sauce, mozzarella and parmesan cheeses, and thick, hearty slices of pepperoni and italian herbs.
+        </p>
+
+        @*//STEP ONE*@
+        <div style="background-color: red; height: 175px; width: 200px; position:relative; margin-right: auto; margin-left: auto;">
+
+            <BSProgress Value="@(isSizeSelected == true ? 33 : 0)" IsStriped="true" IsAnimated="true" Style="background-color: darkgreen; color: red;" />
+            <h1 class="text-center" style="color: seagreen; font-family:pizzaria; font-size: 4em;">@stepStatus</h1>
+
+        </div>
+
+
+
+
+        <div class="row mt-5 text-left">
+
+            @*Image for Size Picker*@
+            <img id="pizzaImg" class="figure-img" src="/images/PngItem_1210582.png" />
+
+
+
+
+
+            @*SIZES*@
+            <div class="col-md-12 d-flex " style="position:relative; margin-right: auto; margin-left: auto;">
+                <div style="position: relative; margin-left: auto; margin-right: auto; display: @(isSizeSelected == true ? "none" : ""); ">
+                    <h3 class="mb-3 sizeDescripText">Choose Count</h3>
+                    <p class="pizzaDescripText"></p>
+                    <select class="custom-select" @bind="@wingService.FinalWingPrice">
+                        <option selected disabled="disabled">Please Choose Size</option>
+                        <option value="@wingService.SixWingCount">6 Count $7.99</option>
+                        <option value="@wingService.TwelveWingCount">12 Count $14.99</option>
+                        <option value="@wingService.TwentyFourWingCount">24 Count $18.99</option>
+                        <option value="@wingService.ThirtySixWingCount">36 Count $27.99</option>
+                    </select>
+                </div>
+
+
+
+                <span style="display:@(isSizeSelected == true ? "" : "none"); position:relative; margin-left: auto; margin-right: auto;">
+                    <PracticeCRUD.Components.PizzaToppingPicker finalPrice="@pizzaService.FinalPizzaPrice" />
+                    @foreach (var item in pizzaService.ExtraToppings)
+                    {
+                        @item
+                    }
+                </span>
+
+
+            </div>
+
+
+
+
+
+        </div>
+        <button class=" bottomButtons btn-primary btn-raised mt-4" @onclick="@( () => isSizeSelected = false)" style="display: @(isSizeSelected == true ? "" : "none") ; background-color: seagreen; font-family: 'Californian FB'; height: 70px; width: auto;">Edit Size</button>
+        <button style="background-color: seagreen; font-family: 'Californian FB'; height: 70px; width: auto;" class=" bottomButtons btn-primary btn-raised mt-4" @onclick="@( () => navManager.NavigateTo("/pizzadisplay"))">Go Back to Pizzas</button>
+      
+        <button style=" display: @(wingService.FinalWingPrice < 1  ? "none" : "") ; background-color: seagreen; font-family: 'Californian FB'; height: 70px; width: auto; " class=" bottomButtons btn-primary btn-raised mt-4" @onclick="@( () => addToCartFinal() )">Go to Checkout</button>
+        
+        <button style="display: @(wingService.FinalWingPrice < 1  ? "none" : "") ; background-color: seagreen; font-family: 'Californian FB'; height: 70px; width: auto;" class=" bottomButtons btn-primary btn-raised mt-4" @onclick="@( () => addToCart() )">Add to Cart & Continue Shopping</button>
+    </div>
+</section>
+
+
+<style>
+
+
+    @@keyframes flipPizza {
+        0% {
+            -webkit-transform: scale(1) rotateZ(0);
+            transform: scale(1) rotateZ(0);
+            filter: blur(4px);
+        }
+        50% {
+            -webkit-transform: scale(2) rotateZ(180deg);
+            transform: scale(2) rotateZ(180deg);
+            filter: blur(2px);
+        }
+        100% {
+            -webkit-transform: scale(1) rotateZ(360deg);
+            transform: scale(1) rotateZ(360deg);
+            filter: blur(0px);
+        }
+}
+
+
+    @@keyframes puff-in-center {
+  0% {
+    -webkit-transform: scale(2);
+            transform: scale(2);
+    -webkit-filter: blur(4px);
+            filter: blur(4px);
+    opacity: 0;
+  }
+  100% {
+    -webkit-transform: scale(1);
+            transform: scale(1);
+    -webkit-filter: blur(0px);
+            filter: blur(0px);
+    opacity: 1;
+  }
+}
+
+
+    #pizzaImg{
+        transition: all 1s ease-in-out;
+        animation:0.8s ease-in-out forwards;
+        animation-name:@(pizzaService.FinalPizzaPrice <= pizzaService.LargePizzaPrice ?  "puff-in-center" : "flipPizza");
+        height:@(determineImgHeight("0px"));
+        width: @(determineImgHeight("0px"));
+        position: relative;
+        margin-left: auto;
+        margin-right: auto;
+        display: @(pizzaService.FinalPizzaPrice > 0 ? "" : "none")
+
+    }
+
+
+    .bottomButtons:hover{
+
+       color: wheat;
+       transition: all 1s ease-in-out;
+       border-color: red;
+    }
+
+    #submitButton {
+        pointer-events: @(wingService.FinalWingPrice > 0 ? "stroke" : "none");
+        filter: blur(@(wingService.FinalWingPrice > 0 ? "0" : "2px"));
+
+    }
+
+    #pizzaDetails {
+        font-family: 'Lucida Sans Unicode';
+        color: whitesmoke;
+        border: 2px dotted green;
+        font-size: 2em;
+        background-color: darkolivegreen;
+    }
+
+    #pizzaDisplayBGImg {
+        height: 100%;
+        width: 100%;
+        z-index: -100;
+        background-size: cover;
+        background-repeat: no-repeat;
+        position: fixed;
+        animation: fadeIn 0.2s ease-in-out forwards;
+    }
+
+    #spanTitleText {
+        color: black;
+        font-family: 'Gloucester MT';
+        position: relative;
+        top: 30px;
+        font-size: 1.5em;
+    }
+
+    #italianMamaPic {
+        height: 300px;
+        width: 400px;
+    }
+
+
+    #pizzaSize:hover {
+        color: grey;
+        border: 25px black solid;
+        transition: all 1s ease-in-out;
+    }
+
+
+    h2 {
+        font-size: 4em;
+        font-family: Papyrus;
+        border-bottom: solid 3px green;
+        background-color: black;
+    }
+
+      
+
+    p {
+        color: white;
+    }
+
+
+
+    .pizzaDescripText {
+        font-family: pizzaria;
+        color: white;
+        font-size: 3em;
+    }
+
+    .sizeDescripText {
+        font-family: Papyrus;
+        letter-spacing: 5px;
+        font-size: 3em;
+        color: whitesmoke;
+    }
+
+        .sizeDescripText:after {
+            content: "";
+            width: auto;
+            background-color: black;
+            height: 14px;
+            top: 5px;
+            position: relative;
+            display: block;
+            clip-path: polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%);
+        }
+
+    @@font-face {
+        font-family: 'pizzaria';
+        src: url('css/open-iconic/font/fonts/pizzaria.ttf') format('truetype');
+    }
+
+
+    @@font-face {
+        font-family: 'Italiano';
+        src: url('file:///C:\Users\heads\source\repos\PracticeCRUD\PracticeCRUD\wwwroot\css\open-iconic\font\Italiano.otf') format('opentype');
+    }
+
+    @@font-face {
+        font-family: 'ItalianBreakfast-Regular';
+        src: url('file:///C:\Users\heads\source\repos\PracticeCRUD\PracticeCRUD\wwwroot\css\open-iconic\font\fonts\ItalianBreakfast-Regular.otf') format('opentype');
+    }
+</style>
+
+@code {
+
+
+    string pizzaAnimationName = "puff-in-center";
+
+    BSModal VerticallyCentered;
+
+    void handleGoToToppings()
+    {
+
+
+        switch (wingService.FinalWingPrice)
+        {
+            case 7.99:
+                wingService.WingCount = "Six Piece";
+                break;
+            case 14.99:
+                wingService.WingCount = "Twelve Piece";
+                break;
+
+            case 18.99:
+                wingService.WingCount = "Twenty Four Piece";
+                break;
+            case 27.99:
+                wingService.WingCount = "Thirty Six Piece";
+                break;
+
+
+        }
+
+
+    }
+
+
+
+    void onToggle(MouseEventArgs e)
+    {
+        VerticallyCentered.Toggle();
+    }
+
+    string[] activePicture = new string[] { "/images/PngItem_1210582.png" };
+
+    bool isSizeSelected = false;
+
+    string determineImgHeight(string imgHeight)
+    {
+
+
+        if (pizzaService.FinalPizzaPrice == wingService.SixWingCount)
+        {
+            imgHeight = "150px";
+        }
+
+        else if (pizzaService.FinalPizzaPrice == wingService.TwelveWingCount)
+        {
+            imgHeight = "200px";
+
+        }
+
+        else if (pizzaService.FinalPizzaPrice == wingService.TwentyFourWingCount)
+        {
+            imgHeight = "250px";
+
+
+        }
+
+        else if (pizzaService.FinalPizzaPrice == wingService.ThirtySixWingCount)
+        {
+            imgHeight = "300px";
+
+        }
+
+        return imgHeight;
+
+
+    }
+
+
+    string stepStatus => isSizeSelected == true ? "Step Two" : "Step One";
+
+    void handleEditSize()
+    {
+        isSizeSelected = false;
+
+    }
+
+
+    void addToCart()
+    {
+
+        handleGoToToppings();
+        pizzaService.CustomerCartOrder.Add($"{new Random().Next(10, 99).ToString()} {pizzaService.Pizza_Size} {pizzaService.Pizza_Name}", pizzaService.FinalPizzaPrice);
+        pizzaService.CurrentOrder = new CustomerOrder()
+        {
+            FinalItemPrice = wingService.FinalWingPrice,
+            PizzaName = "",
+            WingsName = "Blazin Buffalo Wings",
+            WingsCount = wingService.WingCount,
+            PizzaSize = "",
+            ToppingsList = pizzaService.ExtraToppings
+
+
+        };
+
+        pizzaService.TotalOrderItems.Add(pizzaService.CurrentOrder);
+        pizzaService.TotalOrderPrice += wingService.FinalWingPrice;
+        pizzaService.ItemCount++;
+        pizzaService.ExtraToppings = new List<string>();
+        StateHasChanged();
+        navManager.NavigateTo("/");
+
+
+
+
+
+
+    }
+
+    void addToCartFinal()
+    {
+
+        handleGoToToppings();
+
+        pizzaService.CustomerCartOrder.Add($"{new Random().Next(10, 99).ToString()} {pizzaService.Pizza_Size} {pizzaService.Pizza_Name}", pizzaService.FinalPizzaPrice);
+
+        pizzaService.CurrentOrder = new CustomerOrder()
+        {
+            FinalItemPrice = wingService.FinalWingPrice,
+            WingsName = "Blazin Buffalo Wings",
+            WingsCount = wingService.WingCount,
+            PizzaName = "",
+            PizzaSize = "",
+            ToppingsList = pizzaService.ExtraToppings
+
+
+        };
+
+
+
+        pizzaService.TotalOrderPrice += wingService.FinalWingPrice;
+        pizzaService.TotalOrderItems.Add(pizzaService.CurrentOrder);
+        StateHasChanged();
+        pizzaService.ItemCount++;
+        navManager.NavigateTo("/checkout");
+
+
+
+    }
+
+}

@@ -1,0 +1,56 @@
+﻿@page "/db"
+@inherits Data.CardInfoCodeBehind
+@inject Services.PizzaService pizzaService
+@inject Services.WingsService wingService
+@inject AppDbIdentityContext db
+@inject HttpClient client;
+@using Stripe
+@using Stripe.Checkout
+@using Data
+@using Code_Behind
+@using PracticeCRUD.DbData;
+@using CCard_Stripe.Data;
+@using System.Net.Http.Json;
+
+
+
+<div class="container @removeLoader" style=" text-align:center; position: relative; background-size: cover; background-color: pink; text-align: center; top: 300px; margin-bottom: 500px;">
+
+
+   
+
+    <button @onclick="getAllCustomers" class="btn btn-block" style="height: 200px; width: 200px; ">Get Orders</button>
+
+
+
+
+
+</div>
+
+
+@code {  
+
+
+    List<MyCustomer> customers = new List<MyCustomer>();
+    List<CustomerOrder> customerOrders = new List<CustomerOrder>();
+
+    bool wasButtonClicked = false;
+
+    string removeLoader => wasButtonClicked == true && customers.Count < 1 ? "spinner-border" : $"{String.Empty}";
+
+    async void getAllCustomers()
+    {
+        wasButtonClicked = true;
+        customerOrders = await client.GetFromJsonAsync<List<CustomerOrder>>("https://localhost:44339/CustomerOrder");
+        customers = await client.GetFromJsonAsync<List<MyCustomer>>("https://localhost:44339/Customer");
+        StateHasChanged();
+
+    }
+
+
+
+
+
+
+
+}

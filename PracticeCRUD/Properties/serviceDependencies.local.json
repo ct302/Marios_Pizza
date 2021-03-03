@@ -1,0 +1,28 @@
+{
+  "dependencies": {
+    "mssql1": {
+      "type": "mssql.local",
+      "connectionId": "DefaultConnection"
+    },
+    "mssql2": {
+      "type": "mssql.local",
+      "connectionId": "PracticeCRUDContextConnection"
+    },
+    "mssql3": {
+      "type": "mssql.local",
+      "connectionId": "MyIdentityContextConnection"
+    },
+    "mssql4": {
+      "type": "mssql.local",
+      "connectionId": "AppDbContextConnection"
+    },
+    "mssql5": {
+      "type": "mssql.local",
+      "connectionId": "IdentityContextConnection"
+    },
+    "mssql6": {
+      "type": "mssql.local",
+      "connectionId": "AppDbIdentityContextConnection"
+    }
+  }
+}
